@@ -6,12 +6,12 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 09:57:22 by nfour             #+#    #+#             */
-/*   Updated: 2024/04/24 12:01:53 by nfour            ###   ########.fr       */
+/*   Updated: 2024/06/21 18:44:52 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include "../stack_string/stack_string.c"
+#include "../stack_string/stack_string.h"
 
 
 static void ft_check_p(unsigned long nbr, int *count, int fd)

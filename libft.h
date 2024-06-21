@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/06/16 18:44:58 by nfour            ###   ########.fr       */
+/*   Updated: 2024/06/21 18:45:24 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,26 @@
 #include <errno.h>
 
 #include "basic_define.h"
-#include "printf_fd/ft_printf.h"
 #include "list/linked_list.h"
+
+/* Buffer size of stack string */
+#define SSTRING_MAX 1024
+
+#define OUT_OF_SSTRING 1025
+
+/**
+ * Stack string structure
+*/
+typedef struct s_stack_string
+{
+    char        data[SSTRING_MAX];      /* char buffer */
+    uint16_t    size;                   /* Current len of string, position of \0 */
+}	t_stack_string;
+
+typedef t_stack_string t_sstring;
+
+
+
 
 #define BUFFER_SIZE 1
 #define OUT_OF_UINT32 (uint64_t)(UINT32_MAX + 1)
@@ -192,5 +210,7 @@ uint32_t min_uint32(uint32_t a, uint32_t b);
 
 /* Use some libft function */
 #include "stack_string/stack_string.h"
+
+#include "printf_fd/ft_printf.h"
 
 #endif

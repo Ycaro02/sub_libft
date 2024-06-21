@@ -9,23 +9,6 @@
  * Written by Ycaro
 */
 
-/* Buffer size of stack string */
-#define SSTRING_MAX 1024
-
-#define OUT_OF_SSTRING 1025
-
-/**
- * Stack string structure
-*/
-typedef struct s_stack_string
-{
-    char        data[SSTRING_MAX];      /* char buffer */
-    uint16_t    size;                   /* Current len of string, position of \0 */
-}	t_stack_string;
-
-typedef t_stack_string t_sstring;
-
-
 
 /**
  * @brief Create an empty stack string

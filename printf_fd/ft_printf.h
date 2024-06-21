@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfour <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/05 18:55:02 by nfour             #+#    #+#             */
-/*   Updated: 2022/10/05 18:55:04 by nfour            ###   ########.fr       */
+/*   Updated: 2024/06/21 18:46:07 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,7 @@ int		ft_printf_fd(int fd, const char *s, ...);
 void	ft_put_lx_nbr(unsigned int nbr, int *count, int fd);
 void	ft_put_bigx_nbr(unsigned int nbr, int *count, int fd);
 void	ft_put_p_nbr(unsigned long nbr, int *count, int fd);
+
+t_sstring double_to_sstring(double nbr, int precision);
 
 #endif
