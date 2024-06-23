@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/06/23 17:21:12 by nfour            ###   ########.fr       */
+/*   Updated: 2024/06/23 20:29:28 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 #include "basic_define.h"
 #include "list/linked_list.h"
+#include "bitshift_utils.h"
 
 /* Buffer size of stack string */
 #define SSTRING_MAX 1024

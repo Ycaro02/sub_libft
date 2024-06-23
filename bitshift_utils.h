@@ -23,6 +23,10 @@ FT_INLINE u8 s32ValueGet(s32 container, u8 shift) {
 	return ((container & (0xFF << shift)) >> shift);
 }
 
+FT_INLINE u8 s32ValueGetByte(s32 container, u8 byte) {
+	return (container & (0xFF << (byte * 8))) >> (byte * 8);
+}
+
 FT_INLINE u8 s32Value1Get(s32 container) {
 	return ((container & BYTE1_MASK) >> BYTE1_SHIFT);
 }
