@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/06/21 18:45:24 by nfour            ###   ########.fr       */
+/*   Updated: 2024/06/23 17:21:12 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdint.h>
 #include "limits.h"
 #include <fcntl.h>
 #include <errno.h>
