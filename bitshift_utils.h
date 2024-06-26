@@ -36,23 +36,4 @@ FT_INLINE u8 u8ValueGet(u8 container, u8 shift) {
 	return ((container & (1 << shift)) >> shift);
 }
 
-
-
-/* Useless funct */
-// FT_INLINE u8 s32Value1Get(s32 container) {
-// 	return ((container & BYTE1_MASK) >> BYTE1_SHIFT);
-// }
-
-// FT_INLINE u8 s32Value2Get(s32 container) {
-// 	return ((container & BYTE2_MASK) >> BYTE2_SHIFT);
-// }
-
-// FT_INLINE u8 s32Value3Get(s32 container) {
-// 	return ((container & BYTE3_MASK) >> BYTE3_SHIFT);
-// }
-
-// FT_INLINE u8 s32Value4Get(s32 container) {
-// 	return (container & BYTE4_MASK);
-// }
-
 #endif /* !BITSHIFT_UTILS_HEADER_H */
