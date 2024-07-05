@@ -15,7 +15,7 @@ void display_option_list(t_flag_context flag_c)
 		if (node->value_type == DECIMAL_VALUE) {
 			ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, node->val.digit);
 		}
-		else if (node->value_type == HEXA_VALUE) {
+		else if (node->value_type == HEXA_VALUE || node->value_type == CHAR_VALUE) {
 			ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, node->val.str, ft_strlen(node->val.str));
 		} else {
 			ft_printf_fd(1, "No value\n");

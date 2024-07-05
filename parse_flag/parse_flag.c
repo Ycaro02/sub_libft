@@ -152,6 +152,11 @@ static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted
 			opt->val.str = ft_strdup(str);
 			return (TRUE);
 		}
+	} else if (value_type == CHAR_VALUE) {
+		if (ft_strlen(str) <= opt->max_val) {
+			opt->val.str = ft_strdup(str);
+			return (TRUE);
+		}
 	}
     return (FALSE);
 }
