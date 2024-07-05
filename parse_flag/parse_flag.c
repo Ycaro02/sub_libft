@@ -102,6 +102,12 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 			break ;
 		}
 	}
+	if (opt && opt->has_value) {
+		if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
+			ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", programe_name, opt->flag_char);
+			return (NULL);
+		}
+	}
     return (opt);
 }
 
