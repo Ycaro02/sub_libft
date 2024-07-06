@@ -62,11 +62,9 @@ void adapt_free(char *s1, char *s2, char option) {
 char *strjoin_free_size(char *s1, char *s2, char option, u64 s1_size, u64 s2_size)
 {
 	char            *new_s = NULL;
-	u64             new_len = s1_size + s2_size;
-	u64             i = 0, j= 0;
+	u64             new_len = s1_size + s2_size, i = 0, j= 0;
 
-	new_s = malloc((new_len + 1) * sizeof(char));
-	if (!new_s) {
+	if (!(new_s = malloc((new_len + 1) * sizeof(char)))) {
 		adapt_free(s1, s2, option);
 		return (NULL);
 	}
@@ -75,9 +73,7 @@ char *strjoin_free_size(char *s1, char *s2, char option, u64 s1_size, u64 s2_siz
 		i++;
 	}
 	while (i < new_len) {
-		new_s[i] = s2[j];
-		i++;
-		j++;
+		new_s[i++] = s2[j++];
 	}
 	adapt_free(s1, s2, option);
 	new_s[i] = '\0';
