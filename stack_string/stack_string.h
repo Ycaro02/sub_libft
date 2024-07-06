@@ -63,4 +63,6 @@ void        concat_sstring(t_sstring *sstr, char *str);
 */
 char **sstring_load_file(char *path);
 
+char *sstring_brut_load_file(char *path, u64 *size);
+
 #endif /* STACK_STRING_H */
