@@ -58,7 +58,6 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
 
 /**
  *	@brief Check for add flag
- *	@param programe_name name of programe
  *	@param str pointer on string to check
  *	@param flag_c flag context
  *	@param flags pointer on flags to fill
@@ -66,7 +65,7 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
  *	@param long_option long option or short option
  *	@return opt_node if found, NULL otherwise
 */
-static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag_c, u32 *flags, int8_t *error, uint8_t long_option)
+static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, int8_t *error, uint8_t long_option)
 {
     t_opt_node	*opt = NULL;
     int			tmp_value = 0;
@@ -82,7 +81,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 	}
 
     if (!str[j_start]) {
-        ft_printf_fd(2, "j_start %d"PARSE_FLAG_ERR_MSG,  j_start, programe_name, &str[j_start],  programe_name);
+        ft_printf_fd(2, "j_start %d"PARSE_FLAG_ERR_MSG,  j_start, flag_c->prg_name, &str[j_start],  flag_c->prg_name);
         *error = -1;
 		return (NULL);
     } 
@@ -90,7 +89,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 		// ft_printf_fd(1, RED"str: %s\n"RESET, &str[j]);
 		tmp_value = get_flag_val_func(flag_c, &str[j]);
 		if (tmp_value == -1) {
-			ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, &str[j],  programe_name);
+			ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  flag_c->prg_name, &str[j],  flag_c->prg_name);
 			*error = -1;
 			return (NULL);
 		}
@@ -104,7 +103,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 	}
 	if (opt && opt->has_value) {
 		if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
-			ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", programe_name, opt->flag_char);
+			ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
 			return (NULL);
 		}
 	}
@@ -222,9 +221,9 @@ int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_b
 */
 int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 {
-    u32 flags = 0;
-    t_opt_node *opt = NULL;
-	uint8_t long_format_bool = CHAR_FORMAT;
+    t_opt_node	*opt = NULL;
+    u32			flags = 0;
+	uint8_t		long_format_bool = CHAR_FORMAT;
 
     for (int i = 1; i < argc; ++i) {
         // ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
@@ -234,7 +233,7 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 				long_format_bool = LONG_FORMAT;
 			} 
 
-			opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error, long_format_bool);
+			opt = check_for_flag(argv[i], flag_c, &flags, error, long_format_bool);
             if (*error == -1) { /* if invalid flag return */
                 return (FALSE);
             } else if (opt && opt->has_value && !search_opt_value(argv, &i, opt, long_format_bool)) {

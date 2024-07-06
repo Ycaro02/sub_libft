@@ -39,7 +39,8 @@ typedef struct opt_node {
 }   t_opt_node;
 
 typedef struct flag_context {
-    char        *opt_str;       /* full char opt */
+    char		*prg_name;		/* program name */
+	char        *opt_str;       /* full char opt */
     t_list      *opt_lst;       /* list of opt node */
 }   t_flag_context;
 
