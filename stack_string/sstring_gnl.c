@@ -84,18 +84,27 @@ char *strjoin_free_size(char *s1, char *s2, char option, u64 s1_size, u64 s2_siz
 	return (new_s);
 }
 
-char *sstring_brut_load_file(char *path, u64 *size)
+
+/**
+ * @brief Read in sstring
+ * @param fd File descriptor
+ * @param path File path
+ * @param size Size of the file
+ * @return allocated char*, the fd content
+*/
+char *sstring_read_fd(int fd, char *path, u64 *size)
 {
 	t_sstring	buff;
 	u8			ret_read = 1;
 	char		*file_content = NULL;
-	int 		fd = -1;	
-	
-	fd = open(path, O_RDONLY);
-	if (fd < 0) {
-		ft_printf_fd(2, "Error\nfd incorect \n");
-		return (NULL);
-	}
+
+	if (fd == -1) {
+		fd = open(path, O_RDONLY);
+		if (fd < 0) {
+			ft_printf_fd(2, "Error: %s No such file or directory\n", path);
+			return (NULL);
+		}
+	}	
 	clear_sstring(&buff);
 	file_content = ft_strdup("");
 	while (ret_read) {
