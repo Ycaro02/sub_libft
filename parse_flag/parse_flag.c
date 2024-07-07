@@ -103,7 +103,7 @@ static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, int8_
 	}
 	if (opt && opt->has_value) {
 		if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
-			ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
+			// ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
 			return (NULL);
 		}
 	}
@@ -240,14 +240,17 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
                 *error = -1;
                 return (FALSE);
             }
+			if (opt) {
+				argv[i] = "";
+			}
         }
 		/* Reset long format bool */
 		long_format_bool = CHAR_FORMAT;
     }
 
-    // for (int i = 0; i < argc; ++i) {
-    //     ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
-    // }
+    for (int i = 0; i < argc; ++i) {
+        ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
+    }
 
     display_flags(flag_c->opt_str, flags);
 	return (flags);
