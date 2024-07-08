@@ -6,7 +6,7 @@
 #    By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 16:07:03 by nfour             #+#    #+#              #
-#    Updated: 2024/06/09 13:10:17 by nfour            ###   ########.fr        #
+#    Updated: 2024/07/08 11:15:00 by nfour            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,11 +42,10 @@ ifeq ($(shell [ -d ${OBJ_DIR} ] && echo 0 || echo 1), 0)
 endif
 
 fclean : clean
-ifeq ($(shell [ -f ${NAME} ] && echo 0 || echo 1), 0)
 	@${RM} $(NAME)
 	@${RM} ${OBJ_DIR}
+	@ make -s -C list fclean
 	@printf "$(RED)$(NAME) deleted$(RESET)\n"
-endif
 
 re : fclean all
 
