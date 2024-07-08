@@ -97,7 +97,7 @@ char *sstring_read_fd(int fd, char *path, u64 *size)
 	if (fd == -1) {
 		fd = open(path, O_RDONLY);
 		if (fd < 0) {
-			ft_printf_fd(2, "Error: %s No such file or directory\n", path);
+			// ft_printf_fd(2, "Error: %s No such file or directory\n", path);
 			return (NULL);
 		}
 	}	

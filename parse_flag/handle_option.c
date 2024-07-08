@@ -103,7 +103,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
 		opt->val.str = NULL;
 	}
 	//
-	ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
+	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
 }
@@ -170,7 +170,7 @@ void free_opt_node(void *content)
         if (opt->full_name) {
             free(opt->full_name);
         }
-		if (opt->value_type == HEXA_VALUE && opt->val.str) {
+		if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && opt->val.str) {
 			free(opt->val.str);
 		}
         free(opt);
@@ -184,7 +184,7 @@ void free_opt_node(void *content)
 void free_flag_context(t_flag_context *flag_c)
 {
     if (flag_c) {
-        if (flag_c->opt_str) {
+		if (flag_c->opt_str) {
             free(flag_c->opt_str);
         }
         if (flag_c->opt_lst) {
