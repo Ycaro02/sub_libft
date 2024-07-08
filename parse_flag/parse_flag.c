@@ -248,11 +248,11 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 		long_format_bool = CHAR_FORMAT;
     }
 
-    for (int i = 0; i < argc; ++i) {
-        ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
-    }
+    // for (int i = 0; i < argc; ++i) {
+    //     ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
+    // }
 
-    display_flags(flag_c->opt_str, flags);
+    // display_flags(flag_c->opt_str, flags);
 	return (flags);
 }
 
