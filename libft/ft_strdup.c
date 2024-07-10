@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 14:06:32 by nfour             #+#    #+#             */
-/*   Updated: 2024/04/11 16:16:05 by nfour            ###   ########.fr       */
+/*   Updated: 2024/07/10 20:54:38 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*ft_strdup(const char *s)
 	str = malloc(sizeof(char) * (len + 1));
 	if (str == NULL)
 		return (NULL);
-	while (s[i])
+	while (s && s[i])
 	{
 		str[i] = s[i];
 		i++;

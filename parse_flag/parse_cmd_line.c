@@ -1,6 +1,5 @@
 # include "parse_flag.h"
 
-
 /**
  * @brief Extract file from command line
  * @param argc number of arguments

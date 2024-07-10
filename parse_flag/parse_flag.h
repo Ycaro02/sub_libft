@@ -4,13 +4,13 @@
 #include "../libft.h"
 
 /* Message invalid option */
-#define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry ./%s -h for more information\n"RESET
+#define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry %s -h for more information\n"RESET
 
 /* Message argument required for flag */
-#define PARSE_FLAG_ERR_MSG_ARGS_REQ     RED"%s: option requires an argument -- %c\nTry ./%s -h for more information\n"RESET
+#define PARSE_FLAG_ERR_MSG_ARGS_REQ     RED"%s: option requires an argument -- %c\nTry %s -h for more information\n"RESET
 
 /* Message wrong arguments for flag */
-#define PARSE_FLAG_ERR_MSG_WRONG_ARGS   RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry ./%s -h for more information\n"RESET
+#define PARSE_FLAG_ERR_MSG_WRONG_ARGS   RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry %s -h for more information\n"RESET
 
 
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
@@ -149,6 +149,6 @@ void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
  * @param long_format_bool long format or short (char) format
  * @return 1 if found, 0 otherwise
 */
-int		search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
+// int		search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
 
 #endif /* PARSE_FLAG_H */

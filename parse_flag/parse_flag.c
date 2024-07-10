@@ -173,7 +173,7 @@ static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted
  * @param opt pointer on opt node to update
  * @return 1 if found, 0 otherwise
 */
-int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool)
+int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, uint8_t long_format_bool)
 {
     int		char_skip = 0;
     int8_t	in_search = 0 , next_char = 0, ret = 0;
@@ -191,7 +191,7 @@ int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_b
         if (next_char != 0) {
             ret = parse_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
             if (ret == 0) {
-                ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, argv[0], opt->flag_char, &argv[idx][char_skip], argv[0]);
+                ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
                 return (FALSE);
             }
             argv[idx] = "";
@@ -202,7 +202,7 @@ int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_b
         argv[idx] = "";
     }
     if (in_search){
-        ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_ARGS_REQ,  argv[0], opt->flag_char,  argv[0]);
+        ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_ARGS_REQ, prg_name, opt->flag_char,  prg_name);
         return (FALSE);
     }
     return (TRUE);
@@ -236,7 +236,7 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 			opt = check_for_flag(argv[i], flag_c, &flags, error, long_format_bool);
             if (*error == -1) { /* if invalid flag return */
                 return (FALSE);
-            } else if (opt && opt->has_value && !search_opt_value(argv, &i, opt, long_format_bool)) {
+            } else if (opt && opt->has_value && !search_opt_value(argv, &i, flag_c->prg_name, opt, long_format_bool)) {
                 *error = -1;
                 return (FALSE);
             }
