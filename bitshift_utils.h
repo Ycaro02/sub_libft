@@ -36,4 +36,9 @@ FT_INLINE u8 u8ValueGet(u8 container, u8 shift) {
 	return ((container & (1 << shift)) >> shift);
 }
 
+FT_INLINE void u8ValueSet(u8 *container, u8 byte, u8 value) {
+	// *container = (*container & ~(1 << shift)) | (value << shift);
+	*container = (*container & ~(1 << byte)) | (value << byte);
+}
+
 #endif /* !BITSHIFT_UTILS_HEADER_H */
