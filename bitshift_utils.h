@@ -32,8 +32,8 @@ FT_INLINE u8 u8StoreValues(u8 val1, u8 val2, u8 val3, u8 val4, u8 val5, u8 val6,
 	return ((val1 << 7) | (val2 << 6) | (val3 << 5) | (val4 << 4) | (val5 << 3) | (val6 << 2) | (val7 << 1) | val8);
 }
 
-FT_INLINE u8 u8ValueGet(u8 container, u8 shift) {
-	return ((container & (1 << shift)) >> shift);
+FT_INLINE u8 u8ValueGet(u8 container, u8 byte) {
+	return ((container & (1 << byte)) >> byte);
 }
 
 FT_INLINE u8 u8ValueSet(u8 container, u8 byte, u8 value) {
