@@ -97,25 +97,25 @@ void test_u8ValueGet(void) {
 
 void test_u8ValueSet(void) {
 	u8 container = 0b00000000; // 0xAA
-	u8ValueSet(&container, 7, 1);
+	container = u8ValueSet(container, 7, 1);
 	assert(container == 0b10000000); // 0x80
 
-	u8ValueSet(&container, 6, 1);
+	container = u8ValueSet(container, 6, 1);
 	assert(container == 0b11000000); // 0x7A
 
-	u8ValueSet(&container, 5, 1);
+	container = u8ValueSet(container, 5, 1);
 	assert(container == 0b11100000); // 0x7A
 
-	u8ValueSet(&container, 3, 1);
+	container = u8ValueSet(container, 3, 1);
 	assert(container == 0b11101000); // 0x7A
 
-	u8ValueSet(&container, 0, 1);
+	container = u8ValueSet(container, 0, 1);
 	assert(container == 0b11101001); // 0x7A
 
-	u8ValueSet(&container, 7, 0);
+	container = u8ValueSet(container, 7, 0);
 	assert(container == 0b01101001); // 0x7A
 
-	u8ValueSet(&container, 6, 0);
+	container = u8ValueSet(container, 6, 0);
 	assert(container == 0b00101001); // 0x7A
 
 	printf("u8ValueSet test passed.\n");
