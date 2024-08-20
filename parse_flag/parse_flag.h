@@ -60,7 +60,7 @@ t_list  *extract_args(int argc, char **argv);
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-int     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
+u32     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
 
 /**
  * @brief Display flags

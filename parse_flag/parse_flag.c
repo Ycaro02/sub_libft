@@ -219,7 +219,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, uint8
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
+u32 parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 {
     t_opt_node	*opt = NULL;
     u32			flags = 0;

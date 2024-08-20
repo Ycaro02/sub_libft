@@ -99,7 +99,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
 	if (value_type == DECIMAL_VALUE) {
 		opt->val.digit = 0;
 	}
-	else if (value_type == HEXA_VALUE) {
+	else if (value_type == HEXA_VALUE || value_type == CHAR_VALUE) {
 		opt->val.str = NULL;
 	}
 	//
