@@ -70,6 +70,15 @@ u32     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
 void    display_flags(char *all_flag, int flags);
 
 /**
+ * @brief get option value
+ * @param opt_lst list of opt node
+ * @param flag flag to check
+ * @param to_find flag to find
+ * @return value if found, NULL otherwise
+*/
+void *get_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find);
+
+/**
  *	@brief Set flag, enable target flag_val in flags
  *	@param flags pointer on flags
  *	@param flag_val flag value to set
