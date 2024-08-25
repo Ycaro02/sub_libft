@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 17:03:53 by nfour             #+#    #+#             */
-/*   Updated: 2024/06/23 17:21:15 by nfour            ###   ########.fr       */
+/*   Updated: 2024/08/25 13:57:50 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 #define		PTR_SIZE	    sizeof(void *)
 
 /* ANSI COLOR */
+
+# ifndef CHESS_WINDOWS_VERSION
 #define		RED     			"\x1b[31m"
 #define		GREEN   			"\x1b[32m"
 #define		YELLOW  			"\x1b[33m"
@@ -41,6 +43,21 @@
 #define		FILL_YELLOW			"\033[7;33m"
 #define		FILL_RED			"\033[7;31m"
 #define		FILL_YELBLACK		"\033[40;33m"
+# else
+#define		RED     			""
+#define		GREEN   			""
+#define		YELLOW  			""
+#define		BLUE    			""
+#define		PURPLE  			""
+#define		CYAN    			""
+#define		PINK    			""
+#define		ORANGE  			""
+#define		RESET   			""
+#define		FILL_GREEN			""
+#define		FILL_YELLOW			""
+#define		FILL_RED			""
+#define		FILL_YELBLACK		""
+#endif
 
 #define		RESET_LINE			"\r\033[K"
 
