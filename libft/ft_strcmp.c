@@ -29,8 +29,8 @@ int fast_strcmp(const char *s1, const char *s2)
     }
 
 	/* Compare 8 bytes at a time */
-    const uint64_t *p1 = (const uint64_t *)s1;
-    const uint64_t *p2 = (const uint64_t *)s2;
+	p1 = (const uint64_t *)s1;
+	p2 = (const uint64_t *)s2;
     while (*p1 == *p2)
     {
         if (((*p1 - 0x0101010101010101ULL) & ~*p1 & 0x8080808080808080ULL) != 0)
