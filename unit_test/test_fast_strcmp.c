@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <assert.h>
 
 #include "../libft.h"
@@ -49,11 +48,56 @@ void test_fast_strcmp(void)
                             "It contains multiple sentences and is designed to test "
                             "the performance and correctness of the fast_strcmp function.";
     assert(fast_strcmp(long_str7, long_str8) == ('T' - 'A'));
+	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
+}
+
+void test_fast_strlen(void)
+{
+	assert(fast_strlen("hello") == 5);
+	assert(fast_strlen("abc") == 3);
+	assert(fast_strlen("abcd") == 4);
+	assert(fast_strlen("foo") == 3);
+	assert(fast_strlen("") == 0);
+
+	const char *long_str = "This is a very long string used for testing purposes. "
+							"It contains multiple sentences and is designed to test "
+							"the performance and correctness of the fast_strlen function.";
+	assert(fast_strlen(long_str) == 169);
+	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
+}
+
+void test_fast_strcpy(void)
+{
+	char dst[100];
+	assert(fast_strcpy(dst, "hello") == dst);
+	assert(fast_strcmp(dst, "hello") == 0);
+
+	assert(fast_strcpy(dst, "abc") == dst);
+	assert(fast_strcmp(dst, "abc") == 0);
+
+	assert(fast_strcpy(dst, "abcd") == dst);
+	assert(fast_strcmp(dst, "abcd") == 0);
+
+	assert(fast_strcpy(dst, "foo") == dst);
+	assert(fast_strcmp(dst, "foo") == 0);
+
+	assert(fast_strcpy(dst, "") == dst);
+	assert(fast_strcmp(dst, "") == 0);
+
+	char dst2[200];
+
+	const char *long_str = "This is a very long string used for testing purposes. "
+							"It contains multiple sentences and is designed to test "
+							"the performance and correctness of the fast_strcpy function.";
+	assert(fast_strcpy(dst2, long_str) == dst2);
+	assert(fast_strcmp(dst2, long_str) == 0);
+	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
 }
 
 int main(void)
 {
     test_fast_strcmp();
-	printf("All tests passed for fast_strcmp\n");
+	test_fast_strlen();
+	test_fast_strcpy();
     return 0;
 }
