@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/07/10 21:05:27 by nfour            ###   ########.fr       */
+/*   Updated: 2024/08/26 17:29:43 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ void 	ft_free_tab(char **tab);
 char    *ft_strjoin_free(char *s1, char *s2, char option);
 int 	ft_lower_strcmp(char *s1, char *s2);
 int 	ftlib_strcmp(char *s1, char *s2);
+int		fast_strcmp(const char *s1, const char *s2);
 void 	free_incomplete_array(void **array, int max);
 int8_t	str_is_digit(char *str);
 int8_t	str_is_hexa(char *str);
