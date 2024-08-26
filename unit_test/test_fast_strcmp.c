@@ -94,10 +94,54 @@ void test_fast_strcpy(void)
 	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
 }
 
+void test_fast_bzero(void)
+{
+	char buffer[100];
+	fast_bzero(buffer, 100);
+	for (int i = 0; i < 100; i++)
+	{
+		assert(buffer[i] == 0);
+	}
+	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
+
+	char buffer2[4537];
+
+	fast_bzero(buffer2, 4537);
+	for (int i = 0; i < 4537; i++)
+	{
+		assert(buffer2[i] == 0);
+	}
+
+	char buffer3[1];
+
+	fast_bzero(buffer3, 1);
+	assert(buffer3[0] == 0);
+
+	char buffer4[1024];
+
+	fast_bzero(buffer4, 1024);
+	for (int i = 0; i < 1024; i++)
+	{
+		assert(buffer4[i] == 0);
+	}
+
+	char buffer5[1025];
+
+	fast_bzero(buffer5, 1025);
+	for (int i = 0; i < 1025; i++)
+	{
+		assert(buffer5[i] == 0);
+	}
+
+	ft_printf_fd(1, GREEN"All tests passed for %s\n"RESET, __func__);
+
+}
+
 int main(void)
 {
     test_fast_strcmp();
 	test_fast_strlen();
 	test_fast_strcpy();
+	test_fast_bzero();
     return 0;
 }

@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stddef.h>
+
 #define BYTE_DECREMENT_MASK	0x0101010101010101ULL
 #define MSB_MASK			0x8080808080808080ULL
 
@@ -98,4 +100,23 @@ char *fast_strcpy(char *dst, const char *src)
 
 	*dst = '\0';
 	return (ret);
+}
+
+void fast_bzero(void *s, size_t n)
+{
+	uint64_t *p = (uint64_t *)s;
+	uint64_t word = 0;
+	uint8_t *p2;
+
+	/* Set 8 bytes at a time */
+	while (n >= 8)
+	{
+		*p++ = word;
+		n -= 8;
+	}
+
+	/* Set the remaining bytes */
+	p2 = (uint8_t *)p;
+	while (n--)
+		*p2++ = 0;
 }

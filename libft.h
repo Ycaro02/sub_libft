@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/08/26 18:05:23 by nfour            ###   ########.fr       */
+/*   Updated: 2024/08/26 18:12:40 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ char	*str_tolower(char *str);
 int		fast_strcmp(const char *s1, const char *s2);
 int		fast_strlen(const char *s);
 char	*fast_strcpy(char *dst, const char *src);
+void	fast_bzero(void *s, size_t n);
 
 /* Double char array handling */
 
