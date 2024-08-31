@@ -14,6 +14,7 @@ SRC =	ft_lstadd_back.c\
 		ft_lst_remove_if.c\
 		ft_lstpop.c\
 		list_to_array.c\
+		array_to_list.c\
 		get_lst_idx_content.c\
 		list_sort.c\
 		reverse_lst.c

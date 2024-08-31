@@ -146,4 +146,14 @@ void			list_sort(t_list **lst, int (*cmp)());
  * @return new allocated array
 */
 void			*list_to_array(t_list *lst, u32 lst_size, u32 type_size);
- # endif /* DEFINE_LINKED_LIST_H */
+
+/**
+ * @brief Convert an array to a list
+ * @param arr array to convert
+ * @param size number of elements in the array
+ * @param size_of_elem size of the type of the content
+ * @return new list
+*/
+t_list			*array_to_list(void *arr, u16 size, u16 size_of_elem);
+
+# endif /* DEFINE_LINKED_LIST_H */
