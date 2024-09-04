@@ -17,7 +17,8 @@ SRC =	ft_lstadd_back.c\
 		array_to_list.c\
 		get_lst_idx_content.c\
 		list_sort.c\
-		reverse_lst.c
+		reverse_lst.c \
+		get_lst_node.c \
 
 OBJ = $(SRC:.c=.o)
 

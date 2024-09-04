@@ -182,6 +182,6 @@ t_list			*array_to_list(void *arr, u16 size, u16 size_of_elem);
  * get_lst_node(lst, (int(*)(void *, void *))memcmp, &to_find);
  * @endcode
 */
-void *get_lst_node(t_list *lst,  int(*cmp)(void *, void *), void *value_to_find)
+void *get_lst_node(t_list *lst,  int(*cmp)(void *, void *), void *value_to_find);
 
 # endif /* DEFINE_LINKED_LIST_H */
