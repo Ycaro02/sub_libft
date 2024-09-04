@@ -156,4 +156,32 @@ void			*list_to_array(t_list *lst, u32 lst_size, u32 type_size);
 */
 t_list			*array_to_list(void *arr, u16 size, u16 size_of_elem);
 
+
+/**
+ * @brief Get the node with the content equal to the value to find
+ * @param lst pointer to the first node of the list
+ * @param cmp function to compare two nodes, the cmp function must return 0 if the two values are equal
+ * @param value_to_find value to find, must be casted to void * and adapted to cmp function
+ * @return content of the node
+ * @note If the list stores structs like this:
+ * @code
+ * struct s_example {
+ *     char *name;
+ *     int value;
+ * };
+ * @endcode
+ * 
+ * And you want to find the node with the name "test", you can use this function like this:
+ * @code
+ * get_lst_node(lst, (int(*)(void *, void *))strcmp, "test");
+ * @endcode
+ * 
+ * If you want to find the node with the value 42, you can use this function like this:
+ * @code
+ * int to_find = 42;
+ * get_lst_node(lst, (int(*)(void *, void *))memcmp, &to_find);
+ * @endcode
+*/
+void *get_lst_node(t_list *lst,  int(*cmp)(void *, void *), void *value_to_find)
+
 # endif /* DEFINE_LINKED_LIST_H */
