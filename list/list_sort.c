@@ -1,7 +1,7 @@
 # include "linked_list.h" 
 
 /* list sort function */
-void    list_sort(t_list **lst, int (*cmp)())
+void    list_sort(t_list **lst, int (*cmp)(void *, void *))
 {
 	t_list  *next;
 	t_list  *current;

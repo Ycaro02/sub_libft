@@ -111,7 +111,7 @@ void 			ft_lstclear_nodeptr(t_list **lst);
  * @param del function to delete the content of the node
  * @param condition function to check if the node need to be removed
 */
-void			ft_lst_remove_if(t_list **list, void *ref, void (*del)(), int (*condition)());
+void			ft_lst_remove_if(t_list **list, void *ref, void (*del)(void *), int (*condition)(void *, void *));
 
 /**
  * @brief Get the content of the node at the index
@@ -136,7 +136,7 @@ void 			reverse_lst(t_list **lst);
  * @param lst pointer to the first node of the list
  * @param cmp function to compare two nodes
 */
-void			list_sort(t_list **lst, int (*cmp)());
+void			list_sort(t_list **lst, int (*cmp)(void *, void *));
 
 /**
  * @brief Convert a list to an allocated array

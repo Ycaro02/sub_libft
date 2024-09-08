@@ -11,7 +11,7 @@
 					args:
 						void *: node to check
 */
-void	ft_lst_remove_if(t_list **list, void *ref, void (*del)(), int (*condition)())
+void	ft_lst_remove_if(t_list **list, void *ref, void (*del)(void *), int (*condition)(void *, void *))
 {
 	t_list	*tmp = NULL;
 	t_list	*lst = NULL;
