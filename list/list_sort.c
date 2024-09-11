@@ -1,26 +1,23 @@
 # include "linked_list.h" 
 
-/* list sort function */
-void    list_sort(t_list **lst, int (*cmp)(void *, void *))
-{
-	t_list  *next;
-	t_list  *current;
+void list_sort(t_list **lst, int (*cmp)(void *, void *)) {
+	t_list	*current;
+	t_list	*next;
+	void	*tmp;
 
-	if (cmp == NULL || lst == NULL || *lst == NULL)
+	if (!lst || !*lst || !cmp)
 		return ;
 	current = *lst;
-	next = current;
-	while (next && current && current->next)
-	{
+	while (current->next) {
 		next = current->next;
-		if (cmp(next->content, current->content) <= 0) { /* if next value lower than current value reverse for strcmp works */
-
-			void *tmp_data = current->content; /* just swap data using tmp */
-			current->content = next->content;
-			next->content = tmp_data;
-			current = *lst;         /* reset current and next */
-			continue ;
+		while (next) {
+			if (cmp(current->content, next->content) <= 0) {
+				tmp = current->content;
+				current->content = next->content;
+				next->content = tmp;
+			}
+			next = next->next;
 		}
-		current = next;
+		current = current->next;
 	}
 }
