@@ -20,7 +20,7 @@ void display_flags(char *all_flag, int flags) {
  *	@param flag_c flag context
  *	@param c pointer on char to check
 */
-static int get_flag_value(t_flag_context *flag_c, char *c) 
+static int get_flag_value(FlagContext *flag_c, char *c) 
 {
     int i = 0;
     int flag = -1;
@@ -41,9 +41,9 @@ static int get_flag_value(t_flag_context *flag_c, char *c)
  *	@param flag_c flag context
  *	@param full_name pointer on full name to check
 */
-int flag_value_long_format(t_flag_context *flag_c, char *full_name)
+int flag_value_long_format(FlagContext *flag_c, char *full_name)
 {
-    t_opt_node *opt = NULL;
+    OptNode *opt = NULL;
     int flag = -1;
 
     opt = search_exist_opt(flag_c->opt_lst, is_same_full_name, full_name);
@@ -65,12 +65,12 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
  *	@param long_option long option or short option
  *	@return opt_node if found, NULL otherwise
 */
-static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, s8 *error, u8 long_option)
+static void *check_for_flag(char *str, FlagContext *flag_c, u32 *flags, s8 *error, u8 long_option)
 {
-    t_opt_node	*opt = NULL;
+    OptNode	*opt = NULL;
     int			tmp_value = 0;
 	/* Function ptr to choice between char or long format function call */
-	int			(*get_flag_val_func)(t_flag_context *, char *) = get_flag_value;
+	int			(*get_flag_val_func)(FlagContext *, char *) = get_flag_value;
 	s8		(*is_same_func)(void *, void *) = is_same_char_opt;
 	int			j_start = 1;
 
@@ -139,7 +139,7 @@ static char find_next_no_space(char *str) {
  * @return value if valid, 0 otherwise
 */
 
-static s8 parse_flag_value(t_opt_node *opt, char *str, u32 max_accepted, s8 value_type) {
+static s8 parse_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
     u64 tmp = 0;
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {
@@ -173,7 +173,7 @@ static s8 parse_flag_value(t_opt_node *opt, char *str, u32 max_accepted, s8 valu
  * @param opt pointer on opt node to update
  * @return 1 if found, 0 otherwise
 */
-int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, u8 long_format_bool)
+int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_format_bool)
 {
     int		char_skip = 0;
     s8	in_search = 0 , next_char = 0, ret = 0;
@@ -220,7 +220,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, u8 lo
  */
 void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find)
 {
-	t_opt_node	*opt = NULL;
+	OptNode	*opt = NULL;
 	void		*ret = NULL;
 
 	if (has_flag(flag, to_find)) {
@@ -243,9 +243,9 @@ void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find)
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-u32 parse_flag(int argc, char **argv, t_flag_context *flag_c, s8 *error)
+u32 parse_flag(int argc, char **argv, FlagContext *flag_c, s8 *error)
 {
-    t_opt_node	*opt = NULL;
+    OptNode	*opt = NULL;
     u32			flags = 0;
 	u8		long_format_bool = CHAR_FORMAT;
 

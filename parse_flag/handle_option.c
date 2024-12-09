@@ -4,9 +4,9 @@
 /**
  * @brief Display option list for debug
 */
-void display_option_list(t_flag_context flag_c)
+void display_option_list(FlagContext flag_c)
 {
-    t_opt_node *node = NULL; 
+    OptNode *node = NULL; 
 	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
@@ -31,7 +31,7 @@ void display_option_list(t_flag_context flag_c)
 s8 is_same_full_name(void *node, void *data) {
     if (!node || !data)
         return (0);
-    return (ft_strncmp(((t_opt_node *)node)->full_name, (char *)data, ft_strlen(((t_opt_node *)node)->full_name)) == 0);
+    return (ft_strncmp(((OptNode *)node)->full_name, (char *)data, ft_strlen(((OptNode *)node)->full_name)) == 0);
 }
 
 /**
@@ -42,7 +42,7 @@ s8 is_same_full_name(void *node, void *data) {
 s8 is_same_char_opt(void *content, void *c) {
     if (!content || !c)
         return (0);
-    return (((t_opt_node *)content)->flag_char == *(u8 *)c);
+    return (((OptNode *)content)->flag_char == *(u8 *)c);
 }
 
 /**
@@ -53,7 +53,7 @@ s8 is_same_char_opt(void *content, void *c) {
 s8 is_same_flag_val_opt(void *content, void *value) {
     if (!content || !value)
         return (0);
-    return (((t_opt_node *)content)->flag_val == *(u32 *)value);
+    return (((OptNode *)content)->flag_val == *(u32 *)value);
 }
 
 /**
@@ -81,9 +81,9 @@ void *search_exist_opt(t_list *opt_lst, s8 (cmp(void *, void *)), void *data)
  *	@param full_name full name of the flag
  *	@return opt_node if success, NULL otherwise
 */
-static t_opt_node *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, s8 value_type)
+static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, s8 value_type)
 {
-    t_opt_node *opt = ft_calloc(sizeof(t_opt_node), 1);
+    OptNode *opt = ft_calloc(sizeof(OptNode), 1);
 
     if (!opt) {
         ft_printf_fd(2, "Failed to allocate memory for opt\n");
@@ -114,7 +114,7 @@ static t_opt_node *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_nam
  *	@param c char to add
  *	@return 1 if success, 0 otherwise
 */
-static s8 update_opt_str(t_flag_context *flag_c, u8 c)
+static s8 update_opt_str(FlagContext *flag_c, u8 c)
 {
     char new_char[2] = {c, 0};
     if (flag_c->opt_str == NULL) {
@@ -139,9 +139,9 @@ static s8 update_opt_str(t_flag_context *flag_c, u8 c)
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-s8 add_flag_option(t_flag_context *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name)
+s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name)
 {
-    t_opt_node *opt = NULL;
+    OptNode *opt = NULL;
     s8 ret = 0;
 
     if (!flag_c) {
@@ -165,7 +165,7 @@ s8 add_flag_option(t_flag_context *flag_c, u8 c, u32 flag_val, u32 value, s8 val
 */
 void free_opt_node(void *content)
 {
-    t_opt_node *opt = (t_opt_node *)content;
+    OptNode *opt = (OptNode *)content;
     if (opt) {
         if (opt->full_name) {
             free(opt->full_name);
@@ -181,7 +181,7 @@ void free_opt_node(void *content)
  *	@brief Free flag context
  *	@param flag_c flag context
 */
-void free_flag_context(t_flag_context *flag_c)
+void free_flag_context(FlagContext *flag_c)
 {
     if (flag_c) {
 		if (flag_c->opt_str) {

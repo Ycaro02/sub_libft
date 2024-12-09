@@ -3,6 +3,7 @@
 
 #include "../libft.h"
 
+
 /* Message invalid option */
 #define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry %s -h for more information\n"RESET
 
@@ -23,26 +24,52 @@
 #define BINARY_VALUE		4U       /* binary base for value */
 #define CHAR_VALUE			5U       /* char value just store string */
 
-typedef struct opt_node {
-    u8             flag_char;  /* char represent flag */
-    u32            flag_val;   /* flag value, used with bitwise to create application flag */
-    u32			max_val;	/* max value for linked val, or strlen max for string store */
-    u8             has_value;  /* if value is linked */
-	s8				value_type; /* value type */
-    char                *full_name; /* full name opt */
-	/* union value if value is linked */
-	union u_val {
-		u32 digit;
-		char	 *str;	
-	} val;
+union OptValue {
+    uint32_t digit;
+    char    *str;   
+} ;
 
-}   t_opt_node;
+#define VALUE_OVERRID 0
+#define VALUE_APPEND  1
+
+typedef struct OptNode {
+    u32        flag_val;       /* flag value, used with bitwise to create application flag */
+    u32        max_val;        /* max value for linked val, or strlen max for string store */
+    u8        flag_char;      /* char represent flag */
+    u8        has_value;      /* if value is linked */
+    s8        value_type;        /* value type */
+    s8         multiple_val;   /* Accept multiple value or not */
+    char    	*full_name;     /* full name opt */
+	union OptValue val;
+    // t_list    *value;           /* list of OptValue enum for storing value */
+    /* union value if value is linked */
+}   OptNode;
+
+// s8 add_flag_opt(FlagContext *c, char *full_name, u8 opt_char, u32 flag_val);
+
+typedef enum e_FlagOptSet {
+    EOPT_MAX_VAL = 0,
+    EOPT_HAS_VALUE,
+    EOPT_VALUE_TYPE,
+    EOPT_MULTIPLE_VAL,
+    EOPT_SET_VAL,
+} E_FlagOptSet ;
+
+// typedef struct opt_node {
+//     u8             flag_char;  /* char represent flag */
+//     u32            flag_val;   /* flag value, used with bitwise to create application flag */
+//     u32			max_val;	/* max value for linked val, or strlen max for string store */
+//     u8             has_value;  /* if value is linked */
+// 	s8				value_type; /* value type */
+//     char                *full_name; /* full name opt */
+// 	union OptValue val;
+// }   OptNode;
 
 typedef struct flag_context {
     char		*prg_name;		/* program name */
 	char        *opt_str;       /* full char opt */
     t_list      *opt_lst;       /* list of opt node */
-}   t_flag_context;
+}   FlagContext;
 
 /* parse cmd_line */
 t_list  *extract_args(int argc, char **argv);
@@ -60,7 +87,7 @@ t_list  *extract_args(int argc, char **argv);
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-u32     parse_flag(int argc, char **argv,t_flag_context *flag_c, s8 *error);
+u32     parse_flag(int argc, char **argv,FlagContext *flag_c, s8 *error);
 
 /**
  * @brief Display flags
@@ -121,20 +148,20 @@ void	reverse_flag(u32 *flags, u32 flag_val);
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-s8 add_flag_option(t_flag_context *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name);
+s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name);
 
 /**
  * @brief Display option list for debug
  * @param flag_c flag context
  * @param opt_lst list of opt node
 */
-void display_option_list(t_flag_context flag_c);
+void display_option_list(FlagContext flag_c);
 
 /**
  *	@brief Free flag context
  *	@param flag_c flag context
 */
-void    free_flag_context(t_flag_context *flag_c);
+void    free_flag_context(FlagContext *flag_c);
 
 /* explicit compare function for search exist opt */
 s8	is_same_full_name(void *node, void *data);
@@ -158,6 +185,6 @@ void	*search_exist_opt(t_list *opt_lst, s8 (cmp()), void *data);
  * @param long_format_bool long format or short (char) format
  * @return 1 if found, 0 otherwise
 */
-// int		search_opt_value(char **argv, int *i, t_opt_node *opt, u8 long_format_bool);
+// int		search_opt_value(char **argv, int *i, OptNode *opt, u8 long_format_bool);
 
 #endif /* PARSE_FLAG_H */
