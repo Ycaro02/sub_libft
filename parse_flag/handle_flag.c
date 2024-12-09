@@ -47,10 +47,10 @@ void reverse_flag(u32 *flags, u32 flag_val)
 // __always_inline int has_flag(int flags, int flag_val)
 */
 
-int8_t has_flag(u32 flags, u32 flag_val) {
+s8 has_flag(u32 flags, u32 flag_val) {
    return ((flags & flag_val) == flag_val);
 }
 
-int8_t flag_already_present(u32 flags, u32 flag_val) {
+s8 flag_already_present(u32 flags, u32 flag_val) {
     return (has_flag(flags, flag_val));
 }

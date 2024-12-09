@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/08/26 18:12:40 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/09 19:06:09 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 typedef struct s_stack_string
 {
     char        data[SSTRING_MAX];      /* char buffer */
-    uint16_t    size;                   /* Current len of string, position of \0 */
+    u16    size;                   /* Current len of string, position of \0 */
 }	t_stack_string;
 
 typedef t_stack_string t_sstring;
@@ -43,7 +43,7 @@ typedef t_stack_string t_sstring;
 
 
 #define BUFFER_SIZE 1
-#define OUT_OF_UINT32 (uint64_t)(UINT32_MAX + 1)
+#define OUT_OF_UINT32 (u64)(UINT32_MAX + 1)
 
 /* Libft */
 char    *get_next_line(int fd); /* Get next line */
@@ -83,8 +83,8 @@ char    *ft_strjoin_free(char *s1, char *s2, char option);
 int 	ft_lower_strcmp(char *s1, char *s2);
 int 	ftlib_strcmp(char *s1, char *s2);
 void 	free_incomplete_array(void **array, int max);
-int8_t	str_is_digit(char *str);
-int8_t	str_is_hexa(char *str);
+s8	str_is_digit(char *str);
+s8	str_is_hexa(char *str);
 int		ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
@@ -149,7 +149,7 @@ float	ft_atof(char *str);
  *	@param nptr string to convert
  *	@return uint32
 */
-uint64_t array_to_uint32(const char *nptr);
+u64 array_to_uint32(const char *nptr);
 
 /**
  * @brief Convert a string to a int
@@ -197,17 +197,17 @@ void check_struct_size(char *str_test, u32 struct_size, u32 wanted_size);
 /**
  * @brief Return the absolute value between uint32 a and b 
 */
-uint32_t abs_diff(uint32_t a, uint32_t b);
+u32 abs_diff(u32 a, u32 b);
 
 /**
  * @brief Return the maximum value between uint32 a and b
 */
-uint32_t max_uint32(uint32_t a, uint32_t b);
+u32 max_uint32(u32 a, u32 b);
 
 /**
  * @brief Return the minimum value between uint32 a and b
 */
-uint32_t min_uint32(uint32_t a, uint32_t b);
+u32 min_uint32(u32 a, u32 b);
 
 
 /* Use ft_memcpy in mat4 */

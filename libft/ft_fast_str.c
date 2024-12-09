@@ -1,12 +1,13 @@
 #include <stdint.h>
 #include <stddef.h>
+#include "../basic_define.h"
 
 #define BYTE_DECREMENT_MASK	0x0101010101010101ULL
 #define MSB_MASK			0x8080808080808080ULL
 
 int fast_strcmp(const char *s1, const char *s2)
 {
-	const uint64_t *p1, *p2;
+	const u64 *p1, *p2;
 	
     /* Align to 8-byte boundary */
     while (((uintptr_t)s1 & 7) && *s1 && *s1 == *s2)
@@ -16,8 +17,8 @@ int fast_strcmp(const char *s1, const char *s2)
     }
 
 	/* Compare 8 bytes at a time */
-	p1 = (const uint64_t *)s1;
-	p2 = (const uint64_t *)s2;
+	p1 = (const u64 *)s1;
+	p2 = (const u64 *)s2;
     while (*p1 == *p2)
     {
 		/* If one of the bytes in the 8-byte block is a null byte, we've reached the end of the string */
@@ -43,15 +44,15 @@ int fast_strcmp(const char *s1, const char *s2)
 int fast_strlen(const char *s)
 {
 	const char *p = s;
-	const uint64_t *lp;
-	uint64_t word;
+	const u64 *lp;
+	u64 word;
 
 	/* Align to 8-byte boundary */
 	while (((uintptr_t)p & 7) && *p)
 		p++;
 
 	/* Count 8 bytes at a time */
-	lp = (const uint64_t *)p;
+	lp = (const u64 *)p;
 	while (1)
 	{
 		word = *lp;
@@ -71,17 +72,17 @@ int fast_strlen(const char *s)
 char *fast_strcpy(char *dst, const char *src)
 {
 	char *ret = dst;
-	const uint64_t *p1;
-	uint64_t *p2;
-	uint64_t word;
+	const u64 *p1;
+	u64 *p2;
+	u64 word;
 
 	/* Align to 8-byte boundary and copy bytes */
 	while (((uintptr_t)src & 7) && *src)
 		*dst++ = *src++;
 
 	/* Copy 8 bytes at a time */
-	p1 = (const uint64_t *)src;
-	p2 = (uint64_t *)dst;
+	p1 = (const u64 *)src;
+	p2 = (u64 *)dst;
 	while (1)
 	{
 		word = *p1;
@@ -104,9 +105,9 @@ char *fast_strcpy(char *dst, const char *src)
 
 void fast_bzero(void *s, size_t n)
 {
-	uint64_t *p = (uint64_t *)s;
-	uint64_t word = 0;
-	uint8_t *p2;
+	u64 *p = (u64 *)s;
+	u64 word = 0;
+	u8 *p2;
 
 	/* Set 8 bytes at a time */
 	while (n >= 8)
@@ -116,7 +117,7 @@ void fast_bzero(void *s, size_t n)
 	}
 
 	/* Set the remaining bytes */
-	p2 = (uint8_t *)p;
+	p2 = (u8 *)p;
 	while (n--)
 		*p2++ = 0;
 }

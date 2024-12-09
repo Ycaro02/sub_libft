@@ -28,7 +28,7 @@ void display_option_list(t_flag_context flag_c)
  * @param node node to check
  * @param data data to compare
 */
-int8_t is_same_full_name(void *node, void *data) {
+s8 is_same_full_name(void *node, void *data) {
     if (!node || !data)
         return (0);
     return (ft_strncmp(((t_opt_node *)node)->full_name, (char *)data, ft_strlen(((t_opt_node *)node)->full_name)) == 0);
@@ -39,10 +39,10 @@ int8_t is_same_full_name(void *node, void *data) {
  * @param content content to check
  * @param c char to compare
 */
-int8_t is_same_char_opt(void *content, void *c) {
+s8 is_same_char_opt(void *content, void *c) {
     if (!content || !c)
         return (0);
-    return (((t_opt_node *)content)->flag_char == *(uint8_t *)c);
+    return (((t_opt_node *)content)->flag_char == *(u8 *)c);
 }
 
 /**
@@ -50,10 +50,10 @@ int8_t is_same_char_opt(void *content, void *c) {
  * @param content content to check
  * @param value value to compare
 */
-int8_t is_same_flag_val_opt(void *content, void *value) {
+s8 is_same_flag_val_opt(void *content, void *value) {
     if (!content || !value)
         return (0);
-    return (((t_opt_node *)content)->flag_val == *(uint32_t *)value);
+    return (((t_opt_node *)content)->flag_val == *(u32 *)value);
 }
 
 /**
@@ -63,7 +63,7 @@ int8_t is_same_flag_val_opt(void *content, void *value) {
  * @param data data to compare
  * @return opt_node if found, NULL otherwise
 */
-void *search_exist_opt(t_list *opt_lst, int8_t (cmp(void *, void *)), void *data)
+void *search_exist_opt(t_list *opt_lst, s8 (cmp(void *, void *)), void *data)
 {
     for (t_list *tmp = opt_lst; tmp; tmp = tmp->next) {
         if (cmp(tmp->content, data)) {
@@ -81,7 +81,7 @@ void *search_exist_opt(t_list *opt_lst, int8_t (cmp(void *, void *)), void *data
  *	@param full_name full name of the flag
  *	@return opt_node if success, NULL otherwise
 */
-static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value, char *full_name, int8_t value_type)
+static t_opt_node *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, s8 value_type)
 {
     t_opt_node *opt = ft_calloc(sizeof(t_opt_node), 1);
 
@@ -114,7 +114,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
  *	@param c char to add
  *	@return 1 if success, 0 otherwise
 */
-static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
+static s8 update_opt_str(t_flag_context *flag_c, u8 c)
 {
     char new_char[2] = {c, 0};
     if (flag_c->opt_str == NULL) {
@@ -139,10 +139,10 @@ static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, int8_t value_type, char* full_name)
+s8 add_flag_option(t_flag_context *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name)
 {
     t_opt_node *opt = NULL;
-    int8_t ret = 0;
+    s8 ret = 0;
 
     if (!flag_c) {
         ft_printf_fd(2, "Invalid list option addr\n");

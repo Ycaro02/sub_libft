@@ -6,16 +6,16 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 13:40:26 by nfour             #+#    #+#             */
-/*   Updated: 2024/04/11 16:16:05 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/09 19:05:36 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-uint64_t array_to_uint32(const char *nptr)
+u64 array_to_uint32(const char *nptr)
 {
 	int				i = 0;
-	uint64_t		tmp = 0;
+	u64		tmp = 0;
 
 	if (!nptr || !(*nptr)) {
 		return (OUT_OF_UINT32);

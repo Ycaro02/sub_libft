@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:15:06 by nfour             #+#    #+#             */
-/*   Updated: 2024/05/21 11:55:25 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/09 19:06:09 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "ft_math.h"
 
 /* Check float eqauel without epsilon */
-FT_INLINE int8_t float_equal(float a, float b) {
+FT_INLINE s8 float_equal(float a, float b) {
 	return (fabs(a - b) < FT_EPSILON);
 }
 

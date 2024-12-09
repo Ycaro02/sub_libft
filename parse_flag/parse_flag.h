@@ -24,15 +24,15 @@
 #define CHAR_VALUE			5U       /* char value just store string */
 
 typedef struct opt_node {
-    uint8_t             flag_char;  /* char represent flag */
-    uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
-    uint32_t			max_val;	/* max value for linked val, or strlen max for string store */
-    uint8_t             has_value;  /* if value is linked */
-	int8_t				value_type; /* value type */
+    u8             flag_char;  /* char represent flag */
+    u32            flag_val;   /* flag value, used with bitwise to create application flag */
+    u32			max_val;	/* max value for linked val, or strlen max for string store */
+    u8             has_value;  /* if value is linked */
+	s8				value_type; /* value type */
     char                *full_name; /* full name opt */
 	/* union value if value is linked */
 	union u_val {
-		uint32_t digit;
+		u32 digit;
 		char	 *str;	
 	} val;
 
@@ -60,7 +60,7 @@ t_list  *extract_args(int argc, char **argv);
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-u32     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
+u32     parse_flag(int argc, char **argv,t_flag_context *flag_c, s8 *error);
 
 /**
  * @brief Display flags
@@ -76,7 +76,7 @@ void    display_flags(char *all_flag, int flags);
  * @param to_find flag to find
  * @return value if found, NULL otherwise
 */
-void *get_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find);
+void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find);
 
 /**
  *	@brief Set flag, enable target flag_val in flags
@@ -98,10 +98,10 @@ void unset_flag(u32 *flags, u32 flag_val);
  *	@param flag_val flag value to check
  *	@return 1 if flag_val is enable in flags, 0 otherwise
 */
-int8_t  has_flag(u32 flags, u32 flag_val);
+s8  has_flag(u32 flags, u32 flag_val);
 
 /* has flag wrapper */
-int8_t  flag_already_present(u32 flags, u32 flag_val);
+s8  flag_already_present(u32 flags, u32 flag_val);
 
 
 void	reverse_flag(u32 *flags, u32 flag_val);
@@ -121,7 +121,7 @@ void	reverse_flag(u32 *flags, u32 flag_val);
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, int8_t value_type, char* full_name);
+s8 add_flag_option(t_flag_context *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name);
 
 /**
  * @brief Display option list for debug
@@ -137,9 +137,9 @@ void display_option_list(t_flag_context flag_c);
 void    free_flag_context(t_flag_context *flag_c);
 
 /* explicit compare function for search exist opt */
-int8_t	is_same_full_name(void *node, void *data);
-int8_t  is_same_char_opt(void *content, void *c);
-int8_t  is_same_flag_val_opt(void *content, void *value);
+s8	is_same_full_name(void *node, void *data);
+s8  is_same_char_opt(void *content, void *c);
+s8  is_same_flag_val_opt(void *content, void *value);
 
 /**
  * @brief Search for exist opt
@@ -148,7 +148,7 @@ int8_t  is_same_flag_val_opt(void *content, void *value);
  * @param data data to compare
  * @return opt_node if found, NULL otherwise
 */
-void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
+void	*search_exist_opt(t_list *opt_lst, s8 (cmp()), void *data);
 
 /**
  * @brief Search for value linked to flag
@@ -158,6 +158,6 @@ void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
  * @param long_format_bool long format or short (char) format
  * @return 1 if found, 0 otherwise
 */
-// int		search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
+// int		search_opt_value(char **argv, int *i, t_opt_node *opt, u8 long_format_bool);
 
 #endif /* PARSE_FLAG_H */

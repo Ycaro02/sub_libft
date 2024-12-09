@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 12:15:01 by nfour             #+#    #+#             */
-/*   Updated: 2024/04/18 12:15:01 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/09 19:05:46 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 /**
  * Get abs value
 */
-uint32_t abs_diff(uint32_t a, uint32_t b)
+u32 abs_diff(u32 a, u32 b)
 {
-    int64_t diff = (int64_t)a - (int64_t)b;
+    s64 diff = (s64)a - (s64)b;
 
     /* if diff < 0 return (diff * -1) else return diff*/
     return (diff < 0 ? (diff * -1) : diff);
@@ -26,7 +26,7 @@ uint32_t abs_diff(uint32_t a, uint32_t b)
 /**
  * Get max value, return first if ==
 */
-uint32_t max_uint32(uint32_t a, uint32_t b)
+u32 max_uint32(u32 a, u32 b)
 {
     return (a >= b ? a : b);
 }
@@ -34,7 +34,7 @@ uint32_t max_uint32(uint32_t a, uint32_t b)
 /**
  * Get min value, return first if ==
 */
-uint32_t min_uint32(uint32_t a, uint32_t b)
+u32 min_uint32(u32 a, u32 b)
 {
     return (a <= b ? a : b);
 }

@@ -65,13 +65,13 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
  *	@param long_option long option or short option
  *	@return opt_node if found, NULL otherwise
 */
-static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, int8_t *error, uint8_t long_option)
+static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, s8 *error, u8 long_option)
 {
     t_opt_node	*opt = NULL;
     int			tmp_value = 0;
 	/* Function ptr to choice between char or long format function call */
 	int			(*get_flag_val_func)(t_flag_context *, char *) = get_flag_value;
-	int8_t		(*is_same_func)(void *, void *) = is_same_char_opt;
+	s8		(*is_same_func)(void *, void *) = is_same_char_opt;
 	int			j_start = 1;
 
 	if (long_option) {
@@ -115,7 +115,7 @@ static void *check_for_flag(char *str, t_flag_context *flag_c, u32 *flags, int8_
  * @param c char to check
  * @return 1 if space, 0 otherwise
 */
-static int8_t is_char_space(char c) {
+static s8 is_char_space(char c) {
     return (c == ' ' || (c >= '\t' && c <= '\r'));
 }
 
@@ -139,8 +139,8 @@ static char find_next_no_space(char *str) {
  * @return value if valid, 0 otherwise
 */
 
-static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted, int8_t value_type) {
-    uint64_t tmp = 0;
+static s8 parse_flag_value(t_opt_node *opt, char *str, u32 max_accepted, s8 value_type) {
+    u64 tmp = 0;
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {
 			tmp = array_to_uint32(str);
@@ -150,7 +150,7 @@ static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted
 		}
     	/* value * 1 if true othewise return 0 */
 	    tmp *= (tmp <= max_accepted);
-		opt->val.digit = (uint32_t)tmp;
+		opt->val.digit = (u32)tmp;
 		return (opt->val.digit != 0);
 	} else if (value_type == HEXA_VALUE) {
 		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
@@ -173,10 +173,10 @@ static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted
  * @param opt pointer on opt node to update
  * @return 1 if found, 0 otherwise
 */
-int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, uint8_t long_format_bool)
+int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, u8 long_format_bool)
 {
     int		char_skip = 0;
-    int8_t	in_search = 0 , next_char = 0, ret = 0;
+    s8	in_search = 0 , next_char = 0, ret = 0;
 	/* to skip idx start at 2 to skip '-' + '?' (char option) */
 	/* if long format enable, add strlen of name, keep first 2 for '--' */
 	int		to_skip_idx = (long_format_bool == LONG_FORMAT) ? 2 + ft_strlen(opt->full_name) : 2;
@@ -218,7 +218,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, t_opt_node *opt, uint8
  * @param to_find flag to find
  * @return allocated copy option value or NULL if not found
  */
-void *get_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find)
+void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find)
 {
 	t_opt_node	*opt = NULL;
 	void		*ret = NULL;
@@ -243,11 +243,11 @@ void *get_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find)
  * @param error pointer on error
  * @return flags if valid, 0 otherwise and set error to -1
 */
-u32 parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
+u32 parse_flag(int argc, char **argv, t_flag_context *flag_c, s8 *error)
 {
     t_opt_node	*opt = NULL;
     u32			flags = 0;
-	uint8_t		long_format_bool = CHAR_FORMAT;
+	u8		long_format_bool = CHAR_FORMAT;
 
     for (int i = 1; i < argc; ++i) {
         // ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
