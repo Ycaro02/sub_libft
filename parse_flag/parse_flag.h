@@ -24,24 +24,26 @@
 #define BINARY_VALUE		4U       /* binary base for value */
 #define CHAR_VALUE			5U       /* char value just store string */
 
-union OptValue {
+typedef union uopt_val {
     uint32_t digit;
     char    *str;   
-} ;
+} U_OptValue;
 
-#define VALUE_OVERRID 0
-#define VALUE_APPEND  1
+#define VALUE_OVERRID		0
+#define VALUE_NO_OVERRID	1
+#define VALUE_APPEND		2
 
 typedef struct OptNode {
-    u32        flag_val;       /* flag value, used with bitwise to create application flag */
-    u32        max_val;        /* max value for linked val, or strlen max for string store */
-    u8        flag_char;      /* char represent flag */
-    u8        has_value;      /* if value is linked */
-    s8        value_type;        /* value type */
-    s8         multiple_val;   /* Accept multiple value or not */
-    char    	*full_name;     /* full name opt */
-	union OptValue val;
-    // t_list    *value;           /* list of OptValue enum for storing value */
+    u32		flag_val;       /* flag value, used with bitwise to create application flag */
+    u32		max_val;        /* max value for linked val, or strlen max for string store */
+    u8		flag_char;      /* char represent flag */
+    u8		has_value;      /* if value is linked */
+    s8		value_type;        /* value type */
+    s8		multiple_val;   /* Accept multiple value or not */
+	u32		nb_stored_val;	/* Number of stored value */
+    char	*full_name;     /* full name opt */
+	// union U_OptValues val;
+    t_list    *val_lst;           /* list of U_OptValues enum for storing value */
     /* union value if value is linked */
 }   OptNode;
 

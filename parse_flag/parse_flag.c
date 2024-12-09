@@ -101,12 +101,14 @@ static void *check_for_flag(char *str, FlagContext *flag_c, u32 *flags, s8 *erro
 			break ;
 		}
 	}
-	if (opt && opt->has_value) {
-		if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
-			// ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
-			return (NULL);
-		}
-	}
+
+	// TODO: need to implement logic for multiple value handling (no accepted overide or append)
+	// if (opt && opt->has_value) {
+	// 	if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
+	// 		// ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
+	// 		return (NULL);
+	// 	}
+	// }
     return (opt);
 }
 
@@ -139,30 +141,75 @@ static char find_next_no_space(char *str) {
  * @return value if valid, 0 otherwise
 */
 
-static s8 parse_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
-    u64 tmp = 0;
+// static s8 set_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
+//     u64 tmp = 0;
+// 	if (value_type == DECIMAL_VALUE) {
+// 		if (str_is_digit(str)) {
+// 			tmp = array_to_uint32(str);
+// 			if (tmp == OUT_OF_UINT32) {
+// 				tmp = 0;
+// 			}
+// 		}
+//     	/* value * 1 if true othewise return 0 */
+// 	    tmp *= (tmp <= max_accepted);
+// 		opt->val.digit = (u32)tmp;
+// 		return (opt->val.digit != 0);
+// 	} else if (value_type == HEXA_VALUE) {
+// 		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
+// 			opt->val.str = ft_strdup(str);
+// 			return (TRUE);
+// 		}
+// 	} else if (value_type == CHAR_VALUE) {
+// 		if (ft_strlen(str) <= opt->max_val) {
+// 			opt->val.str = ft_strdup(str);
+// 			return (TRUE);
+// 		}
+// 	}
+//     return (FALSE);
+// }
+
+
+U_OptValue *opt_val_new() {
+	U_OptValue *opt_val = ft_calloc(sizeof(U_OptValue), 1);
+	return (opt_val);
+}
+
+static s8 set_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
+    u64 value = 0;
+	U_OptValue *opt_val = NULL;;
+	opt_val = opt_val_new();
+
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {
-			tmp = array_to_uint32(str);
-			if (tmp == OUT_OF_UINT32) {
-				tmp = 0;
+			value = array_to_uint32(str);
+			if (value == OUT_OF_UINT32) {
+				ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
+				free(opt_val);
+				return (FALSE);
 			}
 		}
-    	/* value * 1 if true othewise return 0 */
-	    tmp *= (tmp <= max_accepted);
-		opt->val.digit = (u32)tmp;
-		return (opt->val.digit != 0);
+		if (value <= max_accepted) {
+			opt_val->digit = (u32)value;
+			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+			// opt->val.digit = (u32)value;
+			return (TRUE);
+		}
 	} else if (value_type == HEXA_VALUE) {
 		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
-			opt->val.str = ft_strdup(str);
+			opt_val->str = ft_strdup(str);
+			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+			// opt->val.str = ft_strdup(str);
 			return (TRUE);
 		}
 	} else if (value_type == CHAR_VALUE) {
 		if (ft_strlen(str) <= opt->max_val) {
-			opt->val.str = ft_strdup(str);
+			opt_val->str = ft_strdup(str);
+			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+			// opt->val.str = ft_strdup(str);
 			return (TRUE);
 		}
 	}
+	free(opt_val);
     return (FALSE);
 }
 
@@ -189,7 +236,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
         if (next_char != 0) {
-            ret = parse_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
+            ret = set_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
             if (ret == 0) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
                 return (FALSE);
@@ -218,21 +265,21 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
  * @param to_find flag to find
  * @return allocated copy option value or NULL if not found
  */
-void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find)
+void *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find)
 {
 	OptNode	*opt = NULL;
-	void		*ret = NULL;
+	// void		*ret = NULL;
 
 	if (has_flag(flag, to_find)) {
 		opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
-		if (opt && opt->value_type == DECIMAL_VALUE) {
-			ret = malloc(sizeof(u32));
-			*(u32 *)ret = opt->val.digit;
-		} else if (opt && (opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE)) {
-			ret = ft_strdup(opt->val.str);
-		}
+		// if (opt && opt->value_type == DECIMAL_VALUE) {
+		// 	ret = malloc(sizeof(u32));
+		// 	*(u32 *)ret = opt->val.digit;
+		// } else if (opt && (opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE)) {
+		// 	ret = ft_strdup(opt->val.str);
+		// }
 	}
-	return (ret);
+	return (opt);
 }
 
 /**

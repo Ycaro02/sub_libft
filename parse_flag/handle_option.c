@@ -6,20 +6,29 @@
 */
 void display_option_list(FlagContext flag_c)
 {
-    OptNode *node = NULL; 
+    OptNode	*node = NULL;
+	s32		i = 0; 
 	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
         ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d "RESET, node->flag_char, node->flag_val);
     
-		if (node->value_type == DECIMAL_VALUE) {
-			ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, node->val.digit);
+		for (t_list *val_lst = node->val_lst; val_lst; val_lst = val_lst->next) {
+			U_OptValue *val = val_lst->content;
+			
+			ft_printf_fd(1, "Val number: %d\n", i);
+			if (node->value_type == DECIMAL_VALUE) {
+				ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, val->digit);
+			}
+			else if (node->value_type == HEXA_VALUE || node->value_type == CHAR_VALUE) {
+				ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, val->str, ft_strlen(val->str));
+			} else {
+				ft_printf_fd(1, "No value\n");
+			}
+			i++;
 		}
-		else if (node->value_type == HEXA_VALUE || node->value_type == CHAR_VALUE) {
-			ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, node->val.str, ft_strlen(node->val.str));
-		} else {
-			ft_printf_fd(1, "No value\n");
-		}
+		i = 0;
+
 	}
 }
 
@@ -96,12 +105,13 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, 
     opt->has_value = (value != OPT_NO_VALUE);
     opt->full_name = ft_strdup(full_name);
 	opt->value_type = value_type;
-	if (value_type == DECIMAL_VALUE) {
-		opt->val.digit = 0;
-	}
-	else if (value_type == HEXA_VALUE || value_type == CHAR_VALUE) {
-		opt->val.str = NULL;
-	}
+	opt->val_lst = NULL;
+	// if (value_type == DECIMAL_VALUE) {
+	// 	opt->val.digit = 0;
+	// }
+	// else if (value_type == HEXA_VALUE || value_type == CHAR_VALUE) {
+	// 	opt->val.str = NULL;
+	// }
 	//
 	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
@@ -159,6 +169,13 @@ s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_
     return (ret);
 }
 
+void free_optvalue(OptNode *opt, U_OptValue *val) {
+	
+	if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && val->str) {
+		free(val->str);
+	}
+}
+
 /**
  *	@brief Free opt node
  *	@param content content to free
@@ -170,9 +187,13 @@ void free_opt_node(void *content)
         if (opt->full_name) {
             free(opt->full_name);
         }
-		if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && opt->val.str) {
-			free(opt->val.str);
+		for (t_list *val_lst = opt->val_lst; val_lst; val_lst = val_lst->next) {
+			free_optvalue(opt, val_lst->content);
 		}
+		ft_lstclear(&opt->val_lst, free);
+		// if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && opt->val.str) {
+		// 	free(opt->val.str);
+		// }
         free(opt);
     }
 }
