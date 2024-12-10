@@ -174,39 +174,47 @@ U_OptValue *opt_val_new() {
 	return (opt_val);
 }
 
-static s8 set_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
+static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
     u64 value = 0;
+
+	value = array_to_uint32(str);
+	if (value == OUT_OF_UINT32) {
+		ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
+		free(opt_val);
+		return (FALSE);
+	}
+	if (value <= opt->max_val) {
+		opt_val->digit = (u32)value;
+		ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+		opt->nb_stored_val++;
+		return (TRUE);
+	}
+	free(opt_val);
+	return (FALSE);
+}
+
+static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
+	opt_val->str = ft_strdup(str);
+	ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+	opt->nb_stored_val++;
+	return (TRUE);
+}
+
+static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
 
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {
-			value = array_to_uint32(str);
-			if (value == OUT_OF_UINT32) {
-				ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
-				free(opt_val);
-				return (FALSE);
-			}
-		}
-		if (value <= max_accepted) {
-			opt_val->digit = (u32)value;
-			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-			// opt->val.digit = (u32)value;
-			return (TRUE);
+			return (insert_digit_val(opt, opt_val, str));
 		}
 	} else if (value_type == HEXA_VALUE) {
 		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
-			opt_val->str = ft_strdup(str);
-			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-			// opt->val.str = ft_strdup(str);
-			return (TRUE);
+			return (insert_string_val(opt, opt_val, str));
 		}
 	} else if (value_type == CHAR_VALUE) {
 		if (ft_strlen(str) <= opt->max_val) {
-			opt_val->str = ft_strdup(str);
-			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-			// opt->val.str = ft_strdup(str);
-			return (TRUE);
+			return (insert_string_val(opt, opt_val, str));
 		}
 	}
 	free(opt_val);
@@ -236,7 +244,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
         if (next_char != 0) {
-            ret = set_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
+            ret = set_flag_value(opt, &argv[idx][char_skip], opt->value_type);
             if (ret == 0) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
                 return (FALSE);

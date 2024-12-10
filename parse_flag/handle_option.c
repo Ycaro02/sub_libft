@@ -8,25 +8,27 @@ void display_option_list(FlagContext flag_c)
 {
     OptNode	*node = NULL;
 	s32		i = 0; 
-	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
+	ft_printf_fd(2, CYAN"Option list: Full flag str: |%s|\n"RESET, flag_c.opt_str);
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
-        ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d "RESET, node->flag_char, node->flag_val);
+		ft_printf_fd(1, "------------------------------------------------------------------------------------------");
+        ft_printf_fd(1, CYAN"\nFlag: [-%c]"RESET", "PURPLE"Flag_val [%d]"RESET","YELLOW" Name |%s|"RESET", "ORANGE" accept multiple: [%d] -> nb_store: [%d]\n"RESET, node->flag_char, node->flag_val, node->full_name, node->multiple_val, node->nb_stored_val );
     
 		for (t_list *val_lst = node->val_lst; val_lst; val_lst = val_lst->next) {
 			U_OptValue *val = val_lst->content;
 			
-			ft_printf_fd(1, "\nVal number: %d\n", i);
+			ft_printf_fd(1, "Val number: %d: ", i);
 			if (node->value_type == DECIMAL_VALUE) {
 				ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, val->digit);
 			}
 			else if (node->value_type == HEXA_VALUE || node->value_type == CHAR_VALUE) {
-				ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, val->str, ft_strlen(val->str));
+				ft_printf_fd(1, PURPLE"Str value: |%s|: Len str %d\n"RESET, val->str, ft_strlen(val->str));
 			} else {
 				ft_printf_fd(1, "No value\n");
 			}
 			i++;
 		}
+		ft_printf_fd(1, "------------------------------------------------------------------------------------------\n");
 		i = 0;
 
 	}
