@@ -16,7 +16,7 @@ void display_option_list(FlagContext flag_c)
 		for (t_list *val_lst = node->val_lst; val_lst; val_lst = val_lst->next) {
 			U_OptValue *val = val_lst->content;
 			
-			ft_printf_fd(1, "Val number: %d\n", i);
+			ft_printf_fd(1, "\nVal number: %d\n", i);
 			if (node->value_type == DECIMAL_VALUE) {
 				ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, val->digit);
 			}

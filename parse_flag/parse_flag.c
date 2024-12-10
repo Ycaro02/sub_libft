@@ -265,7 +265,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
  * @param to_find flag to find
  * @return allocated copy option value or NULL if not found
  */
-void *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find)
+OptNode *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find)
 {
 	OptNode	*opt = NULL;
 	// void		*ret = NULL;

@@ -105,7 +105,7 @@ void    display_flags(char *all_flag, int flags);
  * @param to_find flag to find
  * @return value if found, NULL otherwise
 */
-void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find);
+OptNode *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find);
 
 /**
  *	@brief Set flag, enable target flag_val in flags
