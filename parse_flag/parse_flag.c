@@ -174,6 +174,47 @@ U_OptValue *opt_val_new() {
 	return (opt_val);
 }
 
+U_OptValue *get_first_opt_value(OptNode *opt) {
+	if (!opt->val_lst) {
+		return (NULL);
+	}
+	return (opt->val_lst->content);
+}
+
+static s8 can_append_value(OptNode *opt) {
+	if (opt->multiple_val == VALUE_APPEND) {
+		return (TRUE);
+	} else if (opt->multiple_val != VALUE_APPEND && opt->nb_stored_val == 0) {
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static s8 can_override_value(OptNode *opt) {
+	if (opt->multiple_val == VALUE_OVERRID) {
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static void override_value(OptNode *opt, U_OptValue *opt_value) {
+	U_OptValue *stored_val = get_first_opt_value(opt);
+	if (!stored_val) {
+		ft_printf_fd(2, "Error in override value, can't find first value\n");
+		return ;
+	}
+	if (opt->value_type == DECIMAL_VALUE) {
+		stored_val->digit = opt_value->digit;
+	} else if (opt->value_type == CHAR_VALUE  || opt->value_type == HEXA_VALUE) {
+		free(stored_val->str);
+		stored_val->str = ft_strdup(opt_value->str);
+	}
+	if (opt_value->str) {
+		free(opt_value->str);
+	}
+	free(opt_value);
+} 
+
 static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
     u64 value = 0;
 
@@ -185,8 +226,17 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 	}
 	if (value <= opt->max_val) {
 		opt_val->digit = (u32)value;
-		ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-		opt->nb_stored_val++;
+		if (can_append_value(opt)) {
+			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+			opt->nb_stored_val++;
+		} else if (can_override_value(opt)) {
+			override_value(opt, opt_val);
+		} else {
+			free(opt_val);
+			ft_printf_fd(2, "Can't override value return ERROR\n");
+			// If we are here we can't append val (not the first or not append value is set, and we can't override it)
+			return (FALSE);
+		}
 		return (TRUE);
 	}
 	free(opt_val);

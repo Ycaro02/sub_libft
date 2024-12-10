@@ -29,9 +29,9 @@ typedef union uopt_val {
     char    *str;   
 } U_OptValue;
 
-#define VALUE_OVERRID		0
-#define VALUE_NO_OVERRID	1
-#define VALUE_APPEND		2
+#define VALUE_OVERRID		0 /* Overrid last saved value */
+#define VALUE_NO_OVERRID	1 /* Don't overrid value (erorr if we specify the option two time) */
+#define VALUE_APPEND		2 /* Just append value in U_OptValue list */
 
 typedef struct OptNode {
     u32		flag_val;       /* flag value, used with bitwise to create application flag */
