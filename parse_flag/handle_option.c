@@ -12,7 +12,8 @@ void display_option_list(FlagContext flag_c)
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
 		ft_printf_fd(1, "------------------------------------------------------------------------------------------");
-        ft_printf_fd(1, CYAN"\nFlag: [-%c]"RESET", "PURPLE"Flag_val [%d]"RESET","YELLOW" Name |%s|"RESET", "ORANGE" accept multiple: [%d] -> nb_store: [%d]\n"RESET, node->flag_char, node->flag_val, node->full_name, node->multiple_val, node->nb_stored_val );
+        ft_printf_fd(1, CYAN"\nFlag: [-%c]"RESET", "PURPLE"Flag_val [%d]"RESET","YELLOW" Name |%s|"RESET", "ORANGE" multiple val: [%s] -> nb_store: [%d]\n"RESET
+        , node->flag_char, node->flag_val, node->full_name, node->multiple_val == VALUE_APPEND ? "append" : node->multiple_val == VALUE_OVERRID ? "override" : "No override", node->nb_stored_val );
     
 		for (t_list *val_lst = node->val_lst; val_lst; val_lst = val_lst->next) {
 			U_OptValue *val = val_lst->content;
@@ -92,7 +93,7 @@ void *search_exist_opt(t_list *opt_lst, s8 (cmp(void *, void *)), void *data)
  *	@param full_name full name of the flag
  *	@return opt_node if success, NULL otherwise
 */
-static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, s8 value_type)
+static OptNode *create_opt_node(u8 c, u32 flag_val, char *full_name)
 {
     OptNode *opt = ft_calloc(sizeof(OptNode), 1);
 
@@ -102,20 +103,12 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, 
     }
     opt->flag_char = c;
     opt->flag_val = flag_val;
-	opt->max_val = value;
-    // opt->value = (value != OPT_NO_VALUE);
-    opt->has_value = (value != OPT_NO_VALUE);
+	opt->max_val = 0;
     opt->full_name = ft_strdup(full_name);
-	opt->value_type = value_type;
+    opt->has_value = OPT_NO_VALUE;
+	opt->value_type = OPT_NO_VALUE;
 	opt->multiple_val = VALUE_APPEND;
 	opt->val_lst = NULL;
-	// if (value_type == DECIMAL_VALUE) {
-	// 	opt->val.digit = 0;
-	// }
-	// else if (value_type == HEXA_VALUE || value_type == CHAR_VALUE) {
-	// 	opt->val.str = NULL;
-	// }
-	//
 	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
@@ -152,23 +145,22 @@ static s8 update_opt_str(FlagContext *flag_c, u8 c)
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name)
-{
+s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char) {
     OptNode *opt = NULL;
     s8 ret = 0;
 
-    if (!flag_c) {
-        ft_printf_fd(2, "Invalid list option addr\n");
+    if (!c) {
+        ft_printf_fd(2, "Invalid flag context\n");
         return (0);
     } 
-    else if (search_exist_opt(flag_c->opt_lst, is_same_char_opt, &c)\
-        || search_exist_opt(flag_c->opt_lst, is_same_flag_val_opt, &flag_val)) {
-        ft_printf_fd(2, RED"Opt char |%c| or flag val |%d| already present\n"RESET, c, flag_val);
+    else if (search_exist_opt(c->opt_lst, is_same_char_opt, &flag_char)\
+        || search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val)) {
+        ft_printf_fd(2, RED"Opt char |%c| or flag val |%d| already present\n"RESET, flag_char, flag_val);
         return (0);
     }
-    opt = create_opt_node(c, flag_val, value, full_name, value_type);
-    ft_lstadd_back(&flag_c->opt_lst, ft_lstnew(opt));
-    ret = update_opt_str(flag_c, c); 
+    opt = create_opt_node(flag_char, flag_val, full_name);
+    ft_lstadd_back(&c->opt_lst, ft_lstnew(opt));
+    ret = update_opt_str(c, flag_char); 
     return (ret);
 }
 

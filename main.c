@@ -59,21 +59,22 @@ void test_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_wanted
 
 // void call_tester() {
 void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, char **wanted_str, u32 nb_wanted_str, char **wanted_hexa, u32 nb_wanted_hexa) {
-	FlagContext * c = ft_calloc(sizeof(FlagContext), 1);
-	c->prg_name = "./a.out";
-	s8 error = 0;
+	FlagContext *c = flag_context_init(argv);
 
 	ft_printf_fd(1, "Argv input\n");
 	for (int i = 0; i < argc; i++) {
 		ft_printf_fd(1, "argv[%d]: |%s|\n", i, argv[i]);
 	}
 
-	add_flag_option(c, 'c', DIGIT_FLAG, 100, DECIMAL_VALUE, "count");
-	add_flag_option(c, 's', STRING_FLAG, 100, CHAR_VALUE, "string");
-	add_flag_option(c, 'a', HEXA_FLAG,  16, HEXA_VALUE, "hexa");
+	add_flag_option(c, "count", DIGIT_FLAG, 'c');
+	add_flag_option(c, "string", STRING_FLAG, 's');
+	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
 
 	/* call flag parser */
-	u32 flag = parse_flag(argc, argv, c, &error);
+	u32 flag = parse_flag(argc, argv, c, &c->error);
+	if (c->error) {
+		ft_printf_fd(2, "Parse flag error\n");
+	}
 
 	test_decimal_flag(c, flag, wanted_digit, nb_wanted_digit);
 	test_string_flag(c, flag, wanted_str, nb_wanted_str, STRING_FLAG);

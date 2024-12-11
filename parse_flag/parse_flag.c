@@ -15,6 +15,20 @@ void display_flags(char *all_flag, int flags) {
     ft_printf_fd(2, "\n");
 }
 
+FlagContext *flag_context_init(char **argv) {
+	FlagContext *c = ft_calloc(sizeof(FlagContext), 1);
+
+	if (!c) {
+		ft_printf_fd(2, "malloc error flag context init\n");
+		return (NULL);
+	}
+
+	c->prg_name = argv[0];
+	c->error = 0;
+	return (c);
+}
+
+
 /** 
  *	@brief Get flag value from char
  *	@param flag_c flag context

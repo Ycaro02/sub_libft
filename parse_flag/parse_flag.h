@@ -57,20 +57,11 @@ typedef enum e_FlagOptSet {
     EOPT_SET_VAL,
 } E_FlagOptSet ;
 
-// typedef struct opt_node {
-//     u8             flag_char;  /* char represent flag */
-//     u32            flag_val;   /* flag value, used with bitwise to create application flag */
-//     u32			max_val;	/* max value for linked val, or strlen max for string store */
-//     u8             has_value;  /* if value is linked */
-// 	s8				value_type; /* value type */
-//     char                *full_name; /* full name opt */
-// 	union OptValue val;
-// }   OptNode;
-
 typedef struct flag_context {
     char		*prg_name;		/* program name */
 	char        *opt_str;       /* full char opt */
     t_list      *opt_lst;       /* list of opt node */
+    s8          error;
 }   FlagContext;
 
 /* parse cmd_line */
@@ -80,6 +71,14 @@ t_list  *extract_args(int argc, char **argv);
 /****************************/
 /*		Parse flag			*/
 /****************************/
+
+
+/**
+ * @brief Init the flag context structure
+ * @param argv pointer on argument
+ * @return allocated flag context pointer, NULL for malloc error
+*/
+FlagContext *flag_context_init(char **argv);
 
 /**
  * @brief Parse flag
@@ -142,15 +141,13 @@ void	reverse_flag(u32 *flags, u32 flag_val);
 
 /**
  *	@brief Add flag option
- *	@param flag_c flag context
- *	@param c flag char
- *	@param flag_val flag value
- *	@param value value
- *	@param value_type type of value
+ *	@param c flag context
  *	@param full_name full name of the flag
+ *	@param flag_val the power 2 flag value
+ *	@param flag_char the flag char
  *	@return 1 if success, 0 otherwise
 */
-s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name);
+s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char);
 
 /**
  * @brief Display option list for debug
