@@ -67,16 +67,20 @@ void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit,
 	}
 
 	add_flag_option(c, "count", DIGIT_FLAG, 'c');
+	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+
 	add_flag_option(c, "string", STRING_FLAG, 's');
+	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
+	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+
 	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
-
-	// need to implement set value opt, default type is set to opt no value
-	// set_flag_option(c, DIGIT_FLAG, EOPT_HAS_VALUE, TRUE);	
-	// set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
-
-	// set_flag_option(c, STRING_FLAG, EOPT_HAS_VALUE, TRUE);	
-	// set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
-
+	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	
+	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+	// set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, VALUE_OVERRID);
 
 	/* call flag parser */
 	u32 flag = parse_flag(argc, argv, c, &c->error);

@@ -41,7 +41,7 @@ typedef struct OptNode {
 	u32		nb_stored_val;	/* Number of stored value */
     u8		flag_char;      /* char represent flag */
     u8		has_value;      /* if value is linked */
-    s8		value_type;     /* value type */
+    u8		value_type;     /* value type */
     s8		multiple_val;   /* Accept multiple value or not */
 }   OptNode;
 
@@ -49,10 +49,9 @@ typedef struct OptNode {
 
 typedef enum e_FlagOptSet {
     EOPT_MAX_VAL = 0,
-    EOPT_HAS_VALUE,
-    EOPT_VALUE_TYPE,
-    EOPT_MULTIPLE_VAL,
-    EOPT_SET_VAL,
+    EOPT_VALUE_TYPE=1U,
+    EOPT_MULTIPLE_VAL=2U,
+    EOPT_SET_VAL=3U,
 } E_FlagOptSet ;
 
 typedef struct flag_context {
@@ -146,6 +145,10 @@ void	reverse_flag(u32 *flags, u32 flag_val);
  *	@return 1 if success, 0 otherwise
 */
 s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char);
+
+s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt, u32 value);
+// set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
+
 
 /**
  * @brief Display option list for debug

@@ -223,11 +223,27 @@ static void override_value(OptNode *opt, U_OptValue *opt_value) {
 		free(stored_val->str);
 		stored_val->str = ft_strdup(opt_value->str);
 	}
+	// call free optvalue here
 	if (opt_value->str) {
 		free(opt_value->str);
 	}
 	free(opt_value);
 } 
+
+static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
+	if (can_append_value(opt)) {
+		ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+		opt->nb_stored_val += 1;
+	} else if (can_override_value(opt)) {
+		override_value(opt, opt_val);
+	} else {
+		free(opt_val);
+		ft_printf_fd(2, "Can't override value return ERROR\n");
+		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
+		return (FALSE);
+	}
+	return (TRUE);
+}
 
 static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
     u64 value = 0;
@@ -240,20 +256,19 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 	}
 	if (value <= opt->max_val) {
 		opt_val->digit = (u32)value;
-		if (can_append_value(opt)) {
-
-			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-			opt->nb_stored_val += 1;
-			ft_printf_fd(1, "stored %d\n", opt->nb_stored_val);
-		} else if (can_override_value(opt)) {
-			override_value(opt, opt_val);
-		} else {
-			free(opt_val);
-			ft_printf_fd(2, "Can't override value return ERROR\n");
-			// If we are here we can't append val (not the first or not append value is set, and we can't override it)
-			return (FALSE);
-		}
-		return (TRUE);
+		return (handle_value_add(opt, opt_val));
+		// if (can_append_value(opt)) {
+		// 	ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+		// 	opt->nb_stored_val += 1;
+		// } else if (can_override_value(opt)) {
+		// 	override_value(opt, opt_val);
+		// } else {
+		// 	free(opt_val);
+		// 	ft_printf_fd(2, "Can't override value return ERROR\n");
+		// 	// If we are here we can't append val (not the first or not append value is set, and we can't override it)
+		// 	return (FALSE);
+		// }
+		// return (TRUE);
 	}
 	free(opt_val);
 	return (FALSE);
@@ -261,9 +276,10 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 
 static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 	opt_val->str = ft_strdup(str);
-	ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-	opt->nb_stored_val += 1;
-	return (TRUE);
+	return (handle_value_add(opt, opt_val));
+	// ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+	// opt->nb_stored_val += 1;
+	// return (TRUE);
 }
 
 static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
