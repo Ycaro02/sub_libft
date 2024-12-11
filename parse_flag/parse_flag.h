@@ -34,17 +34,15 @@ typedef union uopt_val {
 #define VALUE_APPEND		2 /* Just append value in U_OptValue list */
 
 typedef struct OptNode {
+    char	*full_name;     /* full name opt */
+    t_list    *val_lst;     /* list of U_OptValues enum for storing value */
     u32		flag_val;       /* flag value, used with bitwise to create application flag */
     u32		max_val;        /* max value for linked val, or strlen max for string store */
+	u32		nb_stored_val;	/* Number of stored value */
     u8		flag_char;      /* char represent flag */
     u8		has_value;      /* if value is linked */
-    s8		value_type;        /* value type */
+    s8		value_type;     /* value type */
     s8		multiple_val;   /* Accept multiple value or not */
-	u32		nb_stored_val;	/* Number of stored value */
-    char	*full_name;     /* full name opt */
-	// union U_OptValues val;
-    t_list    *val_lst;           /* list of U_OptValues enum for storing value */
-    /* union value if value is linked */
 }   OptNode;
 
 // s8 add_flag_opt(FlagContext *c, char *full_name, u8 opt_char, u32 flag_val);

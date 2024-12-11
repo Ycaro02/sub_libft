@@ -70,6 +70,14 @@ void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit,
 	add_flag_option(c, "string", STRING_FLAG, 's');
 	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
 
+	// need to implement set value opt, default type is set to opt no value
+	// set_flag_option(c, DIGIT_FLAG, EOPT_HAS_VALUE, TRUE);	
+	// set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
+
+	// set_flag_option(c, STRING_FLAG, EOPT_HAS_VALUE, TRUE);	
+	// set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
+
+
 	/* call flag parser */
 	u32 flag = parse_flag(argc, argv, c, &c->error);
 	if (c->error) {

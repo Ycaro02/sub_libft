@@ -241,8 +241,10 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 	if (value <= opt->max_val) {
 		opt_val->digit = (u32)value;
 		if (can_append_value(opt)) {
+
 			ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-			opt->nb_stored_val++;
+			opt->nb_stored_val += 1;
+			ft_printf_fd(1, "stored %d\n", opt->nb_stored_val);
 		} else if (can_override_value(opt)) {
 			override_value(opt, opt_val);
 		} else {
@@ -260,13 +262,15 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 	opt_val->str = ft_strdup(str);
 	ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-	opt->nb_stored_val++;
+	opt->nb_stored_val += 1;
 	return (TRUE);
 }
 
 static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
+
+
 
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {
@@ -307,7 +311,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
 		in_search = 1;
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
-        if (next_char != 0) {
+		if (next_char != 0) {
             ret = set_flag_value(opt, &argv[idx][char_skip], opt->value_type);
             if (ret == 0) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
