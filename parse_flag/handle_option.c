@@ -107,6 +107,7 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, 
     opt->has_value = (value != OPT_NO_VALUE);
     opt->full_name = ft_strdup(full_name);
 	opt->value_type = value_type;
+	opt->multiple_val = VALUE_APPEND;
 	opt->val_lst = NULL;
 	// if (value_type == DECIMAL_VALUE) {
 	// 	opt->val.digit = 0;

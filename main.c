@@ -57,17 +57,11 @@ void test_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_wanted
 
 }
 
-void call_tester() {
-	char *argv[] = {"./test", "-c", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa"};
+// void call_tester() {
+void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, char **wanted_str, u32 nb_wanted_str, char **wanted_hexa, u32 nb_wanted_hexa) {
 	FlagContext * c = ft_calloc(sizeof(FlagContext), 1);
 	c->prg_name = "./a.out";
 	s8 error = 0;
-	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
-	u32 wanted_val[] = {10, 20, 30};
-	char *wanted_str[] = { "string1", "KOALA"}; 
-	char *wanted_hexa[] = { "ffaa", "01234fa" };
-
 
 	add_flag_option(c, 'c', DIGIT_FLAG, 100, DECIMAL_VALUE, "count");
 	add_flag_option(c, 's', STRING_FLAG, 100, CHAR_VALUE, "string");
@@ -76,9 +70,9 @@ void call_tester() {
 	/* call flag parser */
 	u32 flag = parse_flag(argc, argv, c, &error);
 
-	test_decimal_flag(c, flag, wanted_val, 3);
-	test_string_flag(c, flag, wanted_str, 2, STRING_FLAG);
-	test_string_flag(c, flag, wanted_hexa, 2, HEXA_FLAG);
+	test_decimal_flag(c, flag, wanted_digit, nb_wanted_digit);
+	test_string_flag(c, flag, wanted_str, nb_wanted_str, STRING_FLAG);
+	test_string_flag(c, flag, wanted_hexa, nb_wanted_hexa, HEXA_FLAG);
 
 
 	display_option_list(*c);
@@ -89,8 +83,23 @@ void call_tester() {
 }
 
 
+void test1() {
+	char *argv[] = {"./test", "-c", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa", "-c", "40"};
+	int argc = (sizeof(argv) / sizeof(char *)); 
+	ft_printf_fd(1, "argc: %d\n", argc);
+	u32 wanted_digit[] = {10, 20, 30, 40};
+	char *wanted_str[] = { "string1", "KOALA"}; 
+	char *wanted_hexa[] = { "ffaa", "01234fa" };
+
+	u32 nb_digit = sizeof(wanted_digit) / sizeof(u32);
+	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
+	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
+
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa);
+}
+
 int main (int argc, char **argv) {
 
-	call_tester();
+	test1();
 	return 0;
 }
