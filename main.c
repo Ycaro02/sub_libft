@@ -63,6 +63,11 @@ void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit,
 	c->prg_name = "./a.out";
 	s8 error = 0;
 
+	ft_printf_fd(1, "Argv input\n");
+	for (int i = 0; i < argc; i++) {
+		ft_printf_fd(1, "argv[%d]: |%s|\n", i, argv[i]);
+	}
+
 	add_flag_option(c, 'c', DIGIT_FLAG, 100, DECIMAL_VALUE, "count");
 	add_flag_option(c, 's', STRING_FLAG, 100, CHAR_VALUE, "string");
 	add_flag_option(c, 'a', HEXA_FLAG,  16, HEXA_VALUE, "hexa");
@@ -98,8 +103,24 @@ void test1() {
 	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa);
 }
 
+void test2() {
+	char *argv[] = {"./test", "-c", "1", "-c2", "-sfoo", "-c", "3", "-s", "bar", "-adead01", "-a", "beef", "-c4"};
+	int argc = (sizeof(argv) / sizeof(char *));
+	ft_printf_fd(1, "argc: %d\n", argc);
+	u32 wanted_digit[] = {1, 2, 3, 4};
+	char *wanted_str[] = {"foo", "bar"};
+	char *wanted_hexa[] = {"dead01", "beef"};
+
+	u32 nb_digit = sizeof(wanted_digit) / sizeof(u32);
+	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
+	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
+
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa);
+}
+
 int main (int argc, char **argv) {
 
 	test1();
+	test2();
 	return 0;
 }
