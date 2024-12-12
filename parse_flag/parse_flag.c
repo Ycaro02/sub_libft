@@ -223,9 +223,12 @@ static void override_value(OptNode *opt, U_OptValue *opt_value) {
 		free(stored_val->str);
 		stored_val->str = ft_strdup(opt_value->str);
 	}
-	// call free optvalue here
-	if (opt_value->str) {
-		free(opt_value->str);
+
+
+	if (opt->value_type == CHAR_VALUE  || opt->value_type == HEXA_VALUE) {
+		if (opt_value->str) {
+			free(opt_value->str);
+		}
 	}
 	free(opt_value);
 } 
