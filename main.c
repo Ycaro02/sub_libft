@@ -57,60 +57,41 @@ void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_want
 
 }
 
-void init_flag_context_append(FlagContext *c) {
+void init_flag_context(FlagContext *c, u8 value_handling) {
 	add_flag_option(c, "count", DIGIT_FLAG, 'c');
 	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
 	add_flag_option(c, "string", STRING_FLAG, 's');
 	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
 	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
 	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
 	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	
 	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 }
-
-
-void init_flag_context_override(FlagContext *c) {
-	add_flag_option(c, "count", DIGIT_FLAG, 'c');
-	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, VALUE_OVERRID);
-
-	add_flag_option(c, "string", STRING_FLAG, 's');
-	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
-	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, VALUE_OVERRID);
-
-	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
-	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	
-	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, 100);
-	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, VALUE_OVERRID);
-}
-
-
 
 
 // void call_tester() {
-void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, char **wanted_str, u32 nb_wanted_str, char **wanted_hexa, u32 nb_wanted_hexa, void (init_flag)(FlagContext *)) {
+int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, char **wanted_str, u32 nb_wanted_str, char **wanted_hexa, u32 nb_wanted_hexa, u8 value_handling) {
 	FlagContext *c = flag_context_init(argv);
 
-	ft_printf_fd(1, "Argv input\n");
-	for (int i = 0; i < argc; i++) {
-		ft_printf_fd(1, "argv[%d]: |%s|\n", i, argv[i]);
-	}
+	// ft_printf_fd(1, "Argv input\n");
+	// for (int i = 0; i < argc; i++) {
+	// 	ft_printf_fd(1, "argv[%d]: |%s|\n", i, argv[i]);
+	// }
 
 
-	init_flag(c);
+	init_flag_context(c, value_handling);
 
 	/* call flag parser */
 	u32 flag = parse_flag(argc, argv, c, &c->error);
 	if (c->error) {
 		ft_printf_fd(2, "Parse flag error\n");
+		return (0);
 	}
 
 	verify_decimal_flag(c, flag, wanted_digit, nb_wanted_digit);
@@ -123,6 +104,7 @@ void call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit,
 
 	free_flag_context(c);
 	free(c);
+	return (1);
 }
 
 
@@ -138,7 +120,7 @@ void test1_append() {
 	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
 	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, init_flag_context_append);
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
 }
 
 void test2_append() {
@@ -153,7 +135,7 @@ void test2_append() {
 	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
 	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, init_flag_context_append);
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
 }
 
 
@@ -169,13 +151,51 @@ void test1_override() {
 	u32 nb_str = 1;
 	u32 nb_hexa = 1;
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, init_flag_context_override);
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
 }
+
+void test2_override() {
+	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-add", "-a", "01234fa", "-aff", "-c40", "-stest_last"};
+	int argc = (sizeof(argv) / sizeof(char *)); 
+	ft_printf_fd(1, "argc: %d\n", argc);
+	u32 wanted_digit[] = {40};
+	char *wanted_str[] = {"test_last"}; 
+	char *wanted_hexa[] = {"ff"};
+
+	u32 nb_digit = 1;
+	u32 nb_str = 1;
+	u32 nb_hexa = 1;
+
+	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
+}
+
+
+
+void test1_no_override() {
+	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20"};
+	int argc = (sizeof(argv) / sizeof(char *)); 
+	ft_printf_fd(1, "argc: %d\n", argc);
+	u32 wanted_digit[] = {10};
+	char *wanted_str[] = {"lol"}; 
+	char *wanted_hexa[] = {"ff"};
+
+	u32 nb_digit = 1;
+	u32 nb_str = 1;
+	u32 nb_hexa = 1;
+
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_NO_OVERRID);
+	if (ret == 0) {
+		ft_printf_fd(1, "Test Value can't be overrid return error\n");
+	}
+}
+
 
 int main (int argc, char **argv) {
 
 	test1_append();
 	test2_append();
 	test1_override();
+	test2_override();
+	test1_no_override();
 	return 0;
 }

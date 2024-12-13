@@ -243,7 +243,7 @@ static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
 		free(opt_val);
 		ft_printf_fd(2, "Can't override value return ERROR\n");
 		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
-		return (FALSE);
+		return (CANT_BE_OVERRID);
 	}
 	return (TRUE);
 }
@@ -332,10 +332,12 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
         next_char = find_next_no_space(&argv[idx][char_skip]);
 		if (next_char != 0) {
             ret = set_flag_value(opt, &argv[idx][char_skip], opt->value_type);
-            if (ret == 0) {
+            if (ret == FALSE) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
                 return (FALSE);
-            }
+            } else if ( ret == CANT_BE_OVERRID) {
+                ft_printf_fd(2, RED"%s: invalid argument -- %c value [%s] can't overrid older value\n"RESET, prg_name, opt->flag_char, &argv[idx][char_skip]);
+			}
             argv[idx] = "";
             *i += j;
             in_search = 0;

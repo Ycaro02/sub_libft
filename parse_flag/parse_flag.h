@@ -33,6 +33,9 @@ typedef union uopt_val {
 #define VALUE_NO_OVERRID	1 /* Don't overrid value (erorr if we specify the option two time) */
 #define VALUE_APPEND		2 /* Just append value in U_OptValue list */
 
+
+#define CANT_BE_OVERRID 2
+
 typedef struct OptNode {
     char	*full_name;     /* full name opt */
     t_list    *val_lst;     /* list of U_OptValues enum for storing value */
