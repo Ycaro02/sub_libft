@@ -241,7 +241,7 @@ static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
 		override_value(opt, opt_val);
 	} else {
 		free(opt_val);
-		ft_printf_fd(2, "Can't override value return ERROR\n");
+		// ft_printf_fd(2, "Can't override value return ERROR\n");
 		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
 		return (CANT_BE_OVERRID);
 	}
@@ -306,6 +306,36 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	}
 	free(opt_val);
     return (FALSE);
+}
+
+s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, u32 value) {
+	if (!c) {
+		ft_printf_fd(2, "Invalid flag context\n");
+		return (0);
+	}
+	OptNode *opt_node = search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val);
+	if (!opt_node) {
+		ft_printf_fd(2, "Flag val |%d| not found\n", flag_val);
+		return (0);
+	}
+	switch (opt_to_set) {
+		case EOPT_VALUE_TYPE:
+			opt_node->value_type = (u8)value;
+			if (value != OPT_NO_VALUE) {
+				opt_node->has_value = TRUE;
+			}
+			break;
+		case EOPT_MAX_VAL:
+			opt_node->max_val = value;
+			break;
+		case EOPT_MULTIPLE_VAL:
+			opt_node->multiple_val = (u8)value;
+			break;
+		default:
+			ft_printf_fd(2, "Invalid flag option\n");
+			return (0);
+	}
+	return (1);
 }
 
 /**

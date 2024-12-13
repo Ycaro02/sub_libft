@@ -90,7 +90,7 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 	/* call flag parser */
 	u32 flag = parse_flag(argc, argv, c, &c->error);
 	if (c->error) {
-		ft_printf_fd(2, "Parse flag error\n");
+		// ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
 		return (0);
 	}
 
@@ -120,7 +120,10 @@ void test1_append() {
 	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
 	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
+	if (ret != 1) {
+		ft_printf_fd(1, RED"Test error\n"RESET);
+	}
 }
 
 void test2_append() {
@@ -135,7 +138,10 @@ void test2_append() {
 	u32 nb_str = sizeof(wanted_str) / sizeof(char *);
 	u32 nb_hexa = sizeof(wanted_hexa) / sizeof(char *);
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
+	if (ret != 1) {
+		ft_printf_fd(1, RED"Test error\n"RESET);
+	}
 }
 
 
@@ -151,7 +157,10 @@ void test1_override() {
 	u32 nb_str = 1;
 	u32 nb_hexa = 1;
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
+	if (ret != 1) {
+		ft_printf_fd(1, RED"Test error\n"RESET);
+	}
 }
 
 void test2_override() {
@@ -166,10 +175,11 @@ void test2_override() {
 	u32 nb_str = 1;
 	u32 nb_hexa = 1;
 
-	call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
+	if (ret != 1) {
+		ft_printf_fd(1, RED"Test error\n"RESET);
+	}
 }
-
-
 
 void test1_no_override() {
 	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20"};
@@ -185,9 +195,33 @@ void test1_no_override() {
 
 	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_NO_OVERRID);
 	if (ret == 0) {
-		ft_printf_fd(1, "Test Value can't be overrid return error\n");
+		ft_printf_fd(1, GREEN"Test Value can't be overrid return error\n"RESET);
+	} else {
+		ft_printf_fd(1, RED"Test Value can't be overrid no error\n"RESET);
 	}
 }
+
+
+void test1_invalid_flag() {
+	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20", "-k", "testK"};
+	int argc = (sizeof(argv) / sizeof(char *)); 
+	ft_printf_fd(1, "argc: %d\n", argc);
+	u32 wanted_digit[] = {10};
+	char *wanted_str[] = {"lol"}; 
+	char *wanted_hexa[] = {"ff"};
+
+	u32 nb_digit = 1;
+	u32 nb_str = 1;
+	u32 nb_hexa = 1;
+
+	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
+	if (ret == 0) {
+		ft_printf_fd(1, GREEN"Test invalid flag return error\n"RESET);
+	} else {
+		ft_printf_fd(1, RED"Test invalid flag no error\n"RESET);
+	}
+}
+
 
 
 int main (int argc, char **argv) {
@@ -197,5 +231,6 @@ int main (int argc, char **argv) {
 	test1_override();
 	test2_override();
 	test1_no_override();
+	test1_invalid_flag();
 	return 0;
 }

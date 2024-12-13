@@ -17,22 +17,37 @@
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
 #define LONG_FORMAT		1U          /* long format for check_for_flag */
 
-#define OPT_NO_VALUE		0U       /* no value linked */
-#define DECIMAL_VALUE		1U       /* decimal base for value */
-#define HEXA_VALUE			2U       /* hexadecimal base for value */
-#define OCTAL_VALUE			3U       /* octal base for value */
-#define BINARY_VALUE		4U       /* binary base for value */
-#define CHAR_VALUE			5U       /* char value just store string */
+// #define OPT_NO_VALUE		0U       /* no value linked */
+// #define DECIMAL_VALUE		1U       /* decimal base for value */
+// #define HEXA_VALUE			2U       /* hexadecimal base for value */
+// #define OCTAL_VALUE			3U       /* octal base for value */
+// #define BINARY_VALUE		4U       /* binary base for value */
+// #define CHAR_VALUE			5U       /* char value just store string */
 
 typedef union uopt_val {
     uint32_t digit;
     char    *str;   
 } U_OptValue;
 
-#define VALUE_OVERRID		0 /* Overrid last saved value */
-#define VALUE_NO_OVERRID	1 /* Don't overrid value (erorr if we specify the option two time) */
-#define VALUE_APPEND		2 /* Just append value in U_OptValue list */
+// #define VALUE_OVERRID		0 /* Overrid last saved value */
+// #define VALUE_NO_OVERRID	1 /* Don't overrid value (erorr if we specify the option two time) */
+// #define VALUE_APPEND		2 /* Just append value in U_OptValue list */
 
+
+#define GET_VALUE_TYPE(opt) (opt->flag_opt & 0b00111111)
+#define GET_MULTIPLE_VAL_HANDLING(opt) (opt->flag_opt & 0b111000000)
+
+typedef enum optval_opt {
+	OPT_NO_VALUE = (1 << 0),
+	DECIMAL_VALUE = (1 << 1),
+	HEXA_VALUE = (1 << 2),
+	OCTAL_VALUE = (1 << 3),
+	BINARY_VALUE = (1 << 4),
+	CHAR_VALUE = (1 << 5),
+	VALUE_OVERRID = (1 << 6),
+	VALUE_NO_OVERRID = (1 << 7),
+	VALUE_APPEND = (1 << 8),
+} E_OptValOpt;
 
 #define CANT_BE_OVERRID 2
 
@@ -43,9 +58,10 @@ typedef struct OptNode {
     u32		max_val;        /* max value for linked val, or strlen max for string store */
 	u32		nb_stored_val;	/* Number of stored value */
     u8		flag_char;      /* char represent flag */
-    u8		has_value;      /* if value is linked */
     u8		value_type;     /* value type */
     s8		multiple_val;   /* Accept multiple value or not */
+    u8		has_value;      /* if value is linked */
+	// u16		flag_opt;		/* flag option mixed value_type and multiple val handling */
 }   OptNode;
 
 // s8 add_flag_opt(FlagContext *c, char *full_name, u8 opt_char, u32 flag_val);
@@ -54,7 +70,6 @@ typedef enum e_FlagOptSet {
     EOPT_MAX_VAL = 0,
     EOPT_VALUE_TYPE=1U,
     EOPT_MULTIPLE_VAL=2U,
-    EOPT_SET_VAL=3U,
 } E_FlagOptSet ;
 
 typedef struct flag_context {
