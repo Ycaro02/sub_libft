@@ -245,7 +245,7 @@ static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
 		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
 		return (CANT_BE_OVERRID);
 	}
-	return (TRUE);
+	return (SUCCESS_SET_VALUE);
 }
 
 static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
@@ -255,7 +255,7 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 	if (value == OUT_OF_UINT32) {
 		ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
 		free(opt_val);
-		return (FALSE);
+		return (ERROR_SET_VALUE);
 	}
 	if (value <= opt->max_val) {
 		opt_val->digit = (u32)value;
@@ -274,7 +274,7 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 		// return (TRUE);
 	}
 	free(opt_val);
-	return (FALSE);
+	return (ERROR_SET_VALUE);
 }
 
 static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
@@ -305,18 +305,18 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 		}
 	}
 	free(opt_val);
-    return (FALSE);
+    return (ERROR_SET_VALUE);
 }
 
 s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, u32 value) {
 	if (!c) {
 		ft_printf_fd(2, "Invalid flag context\n");
-		return (0);
+		return (FALSE);
 	}
 	OptNode *opt_node = search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val);
 	if (!opt_node) {
 		ft_printf_fd(2, "Flag val |%d| not found\n", flag_val);
-		return (0);
+		return (FALSE);
 	}
 	switch (opt_to_set) {
 		case EOPT_VALUE_TYPE:
@@ -333,9 +333,9 @@ s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, u32 va
 			break;
 		default:
 			ft_printf_fd(2, "Invalid flag option\n");
-			return (0);
+			return (FALSE);
 	}
-	return (1);
+	return (TRUE);
 }
 
 /**
@@ -367,6 +367,7 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
                 return (FALSE);
             } else if ( ret == CANT_BE_OVERRID) {
                 ft_printf_fd(2, RED"%s: invalid argument -- %c value [%s] can't overrid older value\n"RESET, prg_name, opt->flag_char, &argv[idx][char_skip]);
+				return (FALSE);
 			}
             argv[idx] = "";
             *i += j;
@@ -395,16 +396,9 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
 OptNode *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find)
 {
 	OptNode	*opt = NULL;
-	// void		*ret = NULL;
 
 	if (has_flag(flag, to_find)) {
 		opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
-		// if (opt && opt->value_type == DECIMAL_VALUE) {
-		// 	ret = malloc(sizeof(u32));
-		// 	*(u32 *)ret = opt->val.digit;
-		// } else if (opt && (opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE)) {
-		// 	ret = ft_strdup(opt->val.str);
-		// }
 	}
 	return (opt);
 }

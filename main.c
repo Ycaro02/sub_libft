@@ -30,7 +30,7 @@ void verify_decimal_flag(FlagContext *c, u32 flag, u32 *wanted_val, u32 nb_wante
 	if (i != nb_wanted_val) {
 		ft_printf_fd(2, "Error: wanted %d, got %d\n", nb_wanted_val, i);
 	}
-	ft_printf_fd(2, "All test passed for '%c'\n", opt->flag_char);
+	// ft_printf_fd(2, "All test passed for '%c'\n", opt->flag_char);
 }
 
 void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_wanted_val, u32 wanted_flag) {
@@ -53,7 +53,7 @@ void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_want
 	if (i != nb_wanted_val) {
 		ft_printf_fd(2, "Error: wanted %d, got %d\n", nb_wanted_val, i);
 	}
-	ft_printf_fd(2, "All test passed for '%c'\n", opt->flag_char);
+	// ft_printf_fd(2, "All test passed for '%c'\n", opt->flag_char);
 
 }
 
@@ -79,12 +79,6 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, char **wanted_str, u32 nb_wanted_str, char **wanted_hexa, u32 nb_wanted_hexa, u8 value_handling) {
 	FlagContext *c = flag_context_init(argv);
 
-	// ft_printf_fd(1, "Argv input\n");
-	// for (int i = 0; i < argc; i++) {
-	// 	ft_printf_fd(1, "argv[%d]: |%s|\n", i, argv[i]);
-	// }
-
-
 	init_flag_context(c, value_handling);
 
 	/* call flag parser */
@@ -93,14 +87,14 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 		// ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
 		return (0);
 	}
-
 	verify_decimal_flag(c, flag, wanted_digit, nb_wanted_digit);
 	verify_string_flag(c, flag, wanted_str, nb_wanted_str, STRING_FLAG);
 	verify_string_flag(c, flag, wanted_hexa, nb_wanted_hexa, HEXA_FLAG);
 
 
-	display_option_list(*c);
-
+	// debug display all flag and val here
+	// display_option_list(*c);
+	// debug display all flag and val here
 
 	free_flag_context(c);
 	free(c);
@@ -111,7 +105,6 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 void test1_append() {
 	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa", "-c", "40"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {10, 20, 30, 40};
 	char *wanted_str[] = { "string1", "KOALA"}; 
 	char *wanted_hexa[] = { "ffaa", "01234fa" };
@@ -123,13 +116,14 @@ void test1_append() {
 	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
 	if (ret != 1) {
 		ft_printf_fd(1, RED"Test error\n"RESET);
+	} else {
+		ft_printf_fd(1, GREEN"Test 1 append success\n"RESET);
 	}
 }
 
 void test2_append() {
 	char *argv[] = {"./test", "-c", "1", "-c2", "-sfoo", "-c", "3", "-s", "bar", "-adead01", "-a", "beef", "-c4"};
 	int argc = (sizeof(argv) / sizeof(char *));
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {1, 2, 3, 4};
 	char *wanted_str[] = {"foo", "bar"};
 	char *wanted_hexa[] = {"dead01", "beef"};
@@ -141,6 +135,8 @@ void test2_append() {
 	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_APPEND);
 	if (ret != 1) {
 		ft_printf_fd(1, RED"Test error\n"RESET);
+	} else {
+		ft_printf_fd(1, GREEN"Test 2 append success\n"RESET);
 	}
 }
 
@@ -148,7 +144,6 @@ void test2_append() {
 void test1_override() {
 	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa", "-c", "40"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {40};
 	char *wanted_str[] = {"KOALA"}; 
 	char *wanted_hexa[] = {"01234fa"};
@@ -160,13 +155,14 @@ void test1_override() {
 	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
 	if (ret != 1) {
 		ft_printf_fd(1, RED"Test error\n"RESET);
+	} else {
+		ft_printf_fd(1, GREEN"Test 1 override success\n"RESET);
 	}
 }
 
 void test2_override() {
 	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-add", "-a", "01234fa", "-aff", "-c40", "-stest_last"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {40};
 	char *wanted_str[] = {"test_last"}; 
 	char *wanted_hexa[] = {"ff"};
@@ -178,13 +174,14 @@ void test2_override() {
 	int ret = call_tester(argc, argv, wanted_digit, nb_digit, wanted_str, nb_str, wanted_hexa, nb_hexa, VALUE_OVERRID);
 	if (ret != 1) {
 		ft_printf_fd(1, RED"Test error\n"RESET);
+	} else {
+		ft_printf_fd(1, GREEN"Test 2 override success\n"RESET);
 	}
 }
 
 void test1_no_override() {
 	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {10};
 	char *wanted_str[] = {"lol"}; 
 	char *wanted_hexa[] = {"ff"};
@@ -205,7 +202,6 @@ void test1_no_override() {
 void test1_invalid_flag() {
 	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20", "-k", "testK"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
-	ft_printf_fd(1, "argc: %d\n", argc);
 	u32 wanted_digit[] = {10};
 	char *wanted_str[] = {"lol"}; 
 	char *wanted_hexa[] = {"ff"};
