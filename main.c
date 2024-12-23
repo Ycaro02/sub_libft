@@ -232,6 +232,20 @@ void test1_invalid_flag() {
 
 
 
+void test_input(int argc, char **argv) {
+	FlagContext *c = flag_context_init(argv);
+	init_flag_context(c, VALUE_APPEND);
+	u32 flag = parse_flag(argc, argv, c, &c->error);
+	if (c->error) {
+		ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
+		free_flag_context(c);
+		return ;
+	}
+	// display_flags(c, flag);
+	display_option_list(*c);
+	free_flag_context(c);
+}
+
 int main (int argc, char **argv) {
 
 	test1_append();
@@ -239,6 +253,7 @@ int main (int argc, char **argv) {
 	test1_override();
 	test2_override();
 	test1_no_override();
+	test_input(argc, argv);
 	// test1_invalid_flag();
 	return 0;
 }
