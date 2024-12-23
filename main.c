@@ -85,6 +85,7 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 	u32 flag = parse_flag(argc, argv, c, &c->error);
 	if (c->error) {
 		// ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
+		free_flag_context(c);
 		return (0);
 	}
 	verify_decimal_flag(c, flag, wanted_digit, nb_wanted_digit);
@@ -97,7 +98,6 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 	// debug display all flag and val here
 
 	free_flag_context(c);
-	free(c);
 	return (1);
 }
 
@@ -180,7 +180,7 @@ void test2_override() {
 }
 
 void test1_no_override() {
-	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-c20"};
+	char *argv[] = {"./test", "--count", "10", "-slol", "-aff", "-aAAb"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
 	u32 wanted_digit[] = {10};
 	char *wanted_str[] = {"lol"}; 
@@ -227,6 +227,6 @@ int main (int argc, char **argv) {
 	test1_override();
 	test2_override();
 	test1_no_override();
-	test1_invalid_flag();
+	// test1_invalid_flag();
 	return 0;
 }

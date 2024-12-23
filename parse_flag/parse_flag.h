@@ -141,6 +141,7 @@ void	reverse_flag(u32 *flags, u32 flag_val);
 /****************************/
 /*		Handle Option		*/
 /****************************/
+void free_optvalue(OptNode *opt, U_OptValue *val);
 
 /**
  *	@brief Add flag option

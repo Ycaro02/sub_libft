@@ -149,39 +149,6 @@ static char find_next_no_space(char *str) {
     return (str[i]);
 }
 
-/**
- * @brief Parse flag value
- * @param str string to parse
- * @return value if valid, 0 otherwise
-*/
-
-// static s8 set_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
-//     u64 tmp = 0;
-// 	if (value_type == DECIMAL_VALUE) {
-// 		if (str_is_digit(str)) {
-// 			tmp = array_to_uint32(str);
-// 			if (tmp == OUT_OF_UINT32) {
-// 				tmp = 0;
-// 			}
-// 		}
-//     	/* value * 1 if true othewise return 0 */
-// 	    tmp *= (tmp <= max_accepted);
-// 		opt->val.digit = (u32)tmp;
-// 		return (opt->val.digit != 0);
-// 	} else if (value_type == HEXA_VALUE) {
-// 		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
-// 			opt->val.str = ft_strdup(str);
-// 			return (TRUE);
-// 		}
-// 	} else if (value_type == CHAR_VALUE) {
-// 		if (ft_strlen(str) <= opt->max_val) {
-// 			opt->val.str = ft_strdup(str);
-// 			return (TRUE);
-// 		}
-// 	}
-//     return (FALSE);
-// }
-
 
 U_OptValue *opt_val_new() {
 	U_OptValue *opt_val = ft_calloc(sizeof(U_OptValue), 1);
@@ -240,8 +207,7 @@ static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
 	} else if (can_override_value(opt)) {
 		override_value(opt, opt_val);
 	} else {
-		free(opt_val);
-		// ft_printf_fd(2, "Can't override value return ERROR\n");
+		ft_printf_fd(2, "Can't override value return ERROR\n");
 		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
 		return (CANT_BE_OVERRID);
 	}
@@ -260,26 +226,21 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 	if (value <= opt->max_val) {
 		opt_val->digit = (u32)value;
 		return (handle_value_add(opt, opt_val));
-		// if (can_append_value(opt)) {
-		// 	ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
-		// 	opt->nb_stored_val += 1;
-		// } else if (can_override_value(opt)) {
-		// 	override_value(opt, opt_val);
-		// } else {
-		// 	free(opt_val);
-		// 	ft_printf_fd(2, "Can't override value return ERROR\n");
-		// 	// If we are here we can't append val (not the first or not append value is set, and we can't override it)
-		// 	return (FALSE);
-		// }
-		// return (TRUE);
 	}
 	free(opt_val);
 	return (ERROR_SET_VALUE);
 }
 
 static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
+	s8 ret = 0;
+	
 	opt_val->str = ft_strdup(str);
-	return (handle_value_add(opt, opt_val));
+	ret = handle_value_add(opt, opt_val);
+	if (ret != SUCCESS_SET_VALUE) {
+		free(opt_val->str);
+		free(opt_val);
+	}
+	return (ret);
 	// ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
 	// opt->nb_stored_val += 1;
 	// return (TRUE);
@@ -288,8 +249,6 @@ static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
-
-
 
 	if (value_type == DECIMAL_VALUE) {
 		if (str_is_digit(str)) {

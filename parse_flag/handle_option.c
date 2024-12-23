@@ -207,5 +207,6 @@ void free_flag_context(FlagContext *flag_c)
         if (flag_c->opt_lst) {
             ft_lstclear(&flag_c->opt_lst, free_opt_node);
         }
+        free(flag_c);
     }
 }
