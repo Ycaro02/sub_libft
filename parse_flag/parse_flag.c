@@ -186,13 +186,13 @@ static void override_value(OptNode *opt, U_OptValue *opt_value) {
 	}
 	if (opt->value_type == DECIMAL_VALUE) {
 		stored_val->digit = opt_value->digit;
-	} else if (opt->value_type == CHAR_VALUE  || opt->value_type == HEXA_VALUE) {
+	} else if (opt->value_type > DECIMAL_VALUE) {
 		free(stored_val->str);
 		stored_val->str = ft_strdup(opt_value->str);
 	}
 
 
-	if (opt->value_type == CHAR_VALUE  || opt->value_type == HEXA_VALUE) {
+	if (opt->value_type > DECIMAL_VALUE) {
 		if (opt_value->str) {
 			free(opt_value->str);
 		}
@@ -260,6 +260,14 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 		}
 	} else if (value_type == CHAR_VALUE) {
 		if (ft_strlen(str) <= opt->max_val) {
+			return (insert_string_val(opt, opt_val, str));
+		}
+	} else if (value_type == OCTAL_VALUE) {
+		if (str_is_octal(str) && ft_strlen(str) <= opt->max_val ) {
+			return (insert_string_val(opt, opt_val, str));
+		}
+	} else if (value_type == BINARY_VALUE) {
+		if (str_is_binary(str) && ft_strlen(str) <= opt->max_val ) {
 			return (insert_string_val(opt, opt_val, str));
 		}
 	}

@@ -167,7 +167,7 @@ s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char
 
 void free_optvalue(OptNode *opt, U_OptValue *val) {
 	
-	if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && val->str) {
+	if ((opt->value_type > DECIMAL_VALUE)) {
 		free(val->str);
 	}
 }
@@ -187,9 +187,6 @@ void free_opt_node(void *content)
 			free_optvalue(opt, val_lst->content);
 		}
 		ft_lstclear(&opt->val_lst, free);
-		// if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && opt->val.str) {
-		// 	free(opt->val.str);
-		// }
         free(opt);
     }
 }
