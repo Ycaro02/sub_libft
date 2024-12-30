@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/12/09 19:06:09 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/30 13:44:49 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef t_stack_string t_sstring;
 
 
 #define BUFFER_SIZE 1
-#define OUT_OF_UINT32 (u64)(UINT32_MAX + 1)
+#define OUT_OF_UINT32 (u64)(UINT32_MAX + 1ULL)
 
 /* Libft */
 char    *get_next_line(int fd); /* Get next line */

@@ -43,6 +43,7 @@ typedef struct OptNode {
     char	*full_name;     /* full name opt */
     t_list    *val_lst;     /* list of U_OptValues enum for storing value */
     u32		flag_val;       /* flag value, used with bitwise to create application flag */
+	u32		min_val;        /* min value for linked val, or strlen min for string store */
     u32		max_val;        /* max value for linked val, or strlen max for string store */
 	u32		nb_stored_val;	/* Number of stored value */
     u8		flag_char;      /* char represent flag */
@@ -56,8 +57,9 @@ typedef struct OptNode {
 
 typedef enum e_FlagOptSet {
     EOPT_MAX_VAL = 0,
-    EOPT_VALUE_TYPE=1U,
-    EOPT_MULTIPLE_VAL=2U,
+	EOPT_MIN_VAL = 1U,
+    EOPT_VALUE_TYPE=2U,
+    EOPT_MULTIPLE_VAL=3U,
 } E_FlagOptSet ;
 
 typedef struct flag_context {

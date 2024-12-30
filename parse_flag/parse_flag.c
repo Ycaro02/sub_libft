@@ -218,17 +218,25 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
     u64 value = 0;
 
 	value = array_to_uint32(str);
+	
+	ft_printf_fd(2, "Value: %u\n", value);
 	if (value == OUT_OF_UINT32) {
 		ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
+		goto error_case;
+	} else if (value < opt->min_val) {
+		ft_printf_fd(2, "Value %u is lower than min value %u\n", value, opt->min_val);
+		goto error_case;
+	} else if (value > opt->max_val) {
+		ft_printf_fd(2, "Value %u is higher than max value %u\n", value, opt->max_val);
+		goto error_case;
+	}
+	opt_val->digit = (u32)value;
+	return (handle_value_add(opt, opt_val));
+
+	error_case:
 		free(opt_val);
 		return (ERROR_SET_VALUE);
-	}
-	if (value <= opt->max_val) {
-		opt_val->digit = (u32)value;
-		return (handle_value_add(opt, opt_val));
-	}
-	free(opt_val);
-	return (ERROR_SET_VALUE);
+
 }
 
 static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
@@ -246,6 +254,7 @@ static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 	// return (TRUE);
 }
 
+// Need to implement min value check here for string
 static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
@@ -294,6 +303,9 @@ s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, u32 va
 			break;
 		case EOPT_MAX_VAL:
 			opt_node->max_val = value;
+			break;
+		case EOPT_MIN_VAL:
+			opt_node->min_val = value;
 			break;
 		case EOPT_MULTIPLE_VAL:
 			opt_node->multiple_val = (u8)value;

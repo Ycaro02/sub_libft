@@ -63,6 +63,7 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, value_handling);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, 2);
 
 	add_flag_option(c, "string", STRING_FLAG, 's');
 	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
@@ -134,9 +135,9 @@ void test1_append() {
 }
 
 void test2_append() {
-	char *argv[] = {"./test", "-c", "1", "-c2", "-sfoo", "-c", "3", "-s", "bar", "-adead01", "-a", "beef", "-c4"};
+	char *argv[] = {"./test", "-c", "10", "-c2", "-sfoo", "-c", "3", "-s", "bar", "-adead01", "-a", "beef", "-c4"};
 	int argc = (sizeof(argv) / sizeof(char *));
-	u32 wanted_digit[] = {1, 2, 3, 4};
+	u32 wanted_digit[] = {10, 2, 3, 4};
 	char *wanted_str[] = {"foo", "bar"};
 	char *wanted_hexa[] = {"dead01", "beef"};
 
