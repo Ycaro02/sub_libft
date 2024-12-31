@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/29 13:40:26 by nfour             #+#    #+#             */
-/*   Updated: 2024/12/30 13:42:20 by nfour            ###   ########.fr       */
+/*   Updated: 2024/12/30 13:48:13 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,13 @@ u64 array_to_uint32(const char *nptr)
 	while (ft_isdigit(nptr[i]) != 0) {
 		tmp *= 10;
 		if (tmp > UINT32_MAX) {
-			ft_printf_fd(1, "tmp: %u, return OUT OF INT\n", tmp);
 			return (OUT_OF_UINT32);
 		}
 		tmp += nptr[i++] - 48;
 	}
 	if (nptr[i] != '\0' || tmp > UINT32_MAX) {
-		ft_printf_fd(1, "tmp: %u, change for OUT OF INT\n", tmp);
 		tmp = OUT_OF_UINT32;
 	}
-	ft_printf_fd(1, "return tmp: %u\n", tmp);
 	return (tmp);
 }
 

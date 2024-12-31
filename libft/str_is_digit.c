@@ -36,7 +36,6 @@ s8 str_is_hexa(char *str)  {
 	return (str_is_anything(str, is_hexadigit_char));
 }
 
-
 s8 str_is_octal(char *str) {
 	return (str_is_anything(str, is_octal_char));
 }

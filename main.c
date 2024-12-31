@@ -69,6 +69,8 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
 	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, value_handling);
+	set_flag_option(c, STRING_FLAG, EOPT_MIN_VAL, 2);
+
 
 	add_flag_option(c, "hexa", HEXA_FLAG, 'a');
 	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	

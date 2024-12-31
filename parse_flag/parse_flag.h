@@ -50,7 +50,6 @@ typedef struct OptNode {
     u8		value_type;     /* value type */
     s8		multiple_val;   /* Accept multiple value or not */
     u8		has_value;      /* if value is linked */
-	// u16		flag_opt;		/* flag option mixed value_type and multiple val handling */
 }   OptNode;
 
 // s8 add_flag_opt(FlagContext *c, char *full_name, u8 opt_char, u32 flag_val);

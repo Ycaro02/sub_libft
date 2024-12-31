@@ -219,7 +219,6 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 
 	value = array_to_uint32(str);
 	
-	ft_printf_fd(2, "Value: %u\n", value);
 	if (value == OUT_OF_UINT32) {
 		ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
 		goto error_case;
@@ -254,31 +253,41 @@ static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 	// return (TRUE);
 }
 
-// Need to implement min value check here for string
+static s8 check_string_len(char *str, u32 max_len, u32 min_len) {
+	if (ft_strlen(str) > max_len) {
+		ft_printf_fd(2, "String %s is longer than max len %u\n", str, max_len);
+		return (FALSE);
+	} else if (ft_strlen(str) < min_len) {
+		ft_printf_fd(2, "String %s is shorter than min len %u\n", str, min_len);
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
+static s8 string_value_check(OptNode *opt, char *str, s8 (*str_is_func)(char *)) {
+	if (str_is_func && str_is_func(str) == FALSE) {
+		return (FALSE);
+	}
+	if (check_string_len(str, opt->max_val, opt->min_val) == FALSE) {
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
 static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
 
-	if (value_type == DECIMAL_VALUE) {
-		if (str_is_digit(str)) {
-			return (insert_digit_val(opt, opt_val, str));
-		}
-	} else if (value_type == HEXA_VALUE) {
-		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
-			return (insert_string_val(opt, opt_val, str));
-		}
-	} else if (value_type == CHAR_VALUE) {
-		if (ft_strlen(str) <= opt->max_val) {
-			return (insert_string_val(opt, opt_val, str));
-		}
-	} else if (value_type == OCTAL_VALUE) {
-		if (str_is_octal(str) && ft_strlen(str) <= opt->max_val ) {
-			return (insert_string_val(opt, opt_val, str));
-		}
-	} else if (value_type == BINARY_VALUE) {
-		if (str_is_binary(str) && ft_strlen(str) <= opt->max_val ) {
-			return (insert_string_val(opt, opt_val, str));
-		}
+	if (value_type == DECIMAL_VALUE && str_is_digit(str)) {
+		return (insert_digit_val(opt, opt_val, str));
+	} else if (value_type == HEXA_VALUE && string_value_check(opt, str, str_is_hexa)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == CHAR_VALUE && string_value_check(opt, str, NULL)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == OCTAL_VALUE && string_value_check(opt, str, str_is_octal)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == BINARY_VALUE && string_value_check(opt, str, str_is_binary)) {
+		return (insert_string_val(opt, opt_val, str));
 	}
 	free(opt_val);
     return (ERROR_SET_VALUE);
