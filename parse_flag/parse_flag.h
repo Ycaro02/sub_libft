@@ -17,17 +17,23 @@
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
 #define LONG_FORMAT		1U          /* long format for check_for_flag */
 
-#define OPT_NO_VALUE		0U       /* no value linked */
-#define DECIMAL_VALUE		1U       /* decimal base for value */
-#define HEXA_VALUE			2U       /* hexadecimal base for value */
-#define OCTAL_VALUE			3U       /* octal base for value */
-#define BINARY_VALUE		4U       /* binary base for value */
-#define CHAR_VALUE			5U       /* char value just store string */
+typedef enum opt_value_type {
+	OPT_NO_VALUE=0U,	/* no value linked */
+	DECIMAL_VALUE=1U,	/* decimal base for value */
+	HEXA_VALUE=2U,		/* hexadecimal base for value */
+	OCTAL_VALUE=3U,		/* octal vase for value */
+	BINARY_VALUE=4U,	/* binary base for value */
+	CHAR_VALUE=5U,		/* char value all string accepted*/
+	// TODO implement it, reserve field in node structure for func pointer and provide a way to set it in set flag option
+	CUSTOM_VALUE=6U,	/* Custom value, user must provide function pointer to parse it, return TRUE or 1 for accepted value, 0 or FALSE to reject it */
+} E_OptValueType;
 
+typedef enum opt_value_overrid {
+	VALUE_OVERRID=0, /* Overrid last saved value */
+	VALUE_NO_OVERRID=1, /* Don't overrid value (erorr if we specify the option two time) */
+	VALUE_APPEND=2, /* Just append value in U_OptValue list */
+} E_OptValueOverride;
 
-#define VALUE_OVERRID		0 /* Overrid last saved value */
-#define VALUE_NO_OVERRID	1 /* Don't overrid value (erorr if we specify the option two time) */
-#define VALUE_APPEND		2 /* Just append value in U_OptValue list */
 
 /* Error code for set_flag_value */
 #define ERROR_SET_VALUE	0
