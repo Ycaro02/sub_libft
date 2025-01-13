@@ -35,6 +35,9 @@ typedef enum opt_value_overrid {
 } E_OptValueOverride;
 
 
+// function pointer typedef for custom value parse, void pointer must contain OptNode pointer
+typedef s8 (*CustomValParse)(void *);
+
 /* Error code for set_flag_value */
 #define ERROR_SET_VALUE	0
 #define SUCCESS_SET_VALUE 1
@@ -46,17 +49,19 @@ typedef union uopt_val {
 } U_OptValue;
 
 typedef struct OptNode {
-    char	*full_name;     /* full name opt */
-    t_list    *val_lst;     /* list of U_OptValues enum for storing value */
-    u32		flag_val;       /* flag value, used with bitwise to create application flag */
-	u32		min_val;        /* min value for linked val, or strlen min for string store */
-    u32		max_val;        /* max value for linked val, or strlen max for string store */
-	u32		nb_stored_val;	/* Number of stored value */
-    u8		flag_char;      /* char represent flag */
-    u8		value_type;     /* value type */
-    s8		multiple_val;   /* Accept multiple value or not */
-    u8		has_value;      /* if value is linked */
+    char			*full_name;     /* full name opt */
+    t_list			*val_lst;		/* list of U_OptValues enum for storing value */
+    CustomValParse	*parse;			/* Function pointer to parse custom data or override basic parse func, null if regular type and don't want to override */
+	u32				flag_val;       /* flag value, used with bitwise to create application flag */
+	u32				min_val;        /* min value for linked val, or strlen min for string store */
+    u32				max_val;        /* max value for linked val, or strlen max for string store */
+	u32				nb_stored_val;	/* Number of stored value */
+    u8				flag_char;      /* char represent flag */
+    u8				value_type;     /* value type */
+    s8				multiple_val;   /* Accept multiple value or not */
+    u8				has_value;      /* if value is linked */
 }   OptNode;
+
 
 // s8 add_flag_opt(FlagContext *c, char *full_name, u8 opt_char, u32 flag_val);
 
