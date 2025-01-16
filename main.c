@@ -7,6 +7,7 @@ enum flag_enum {
 	STRING_FLAG=2,
 	HEXA_FLAG=4,
 	OCTAL_FLAG=8,
+	KUSTOM_FLAG=16,
 };
 
 void verify_decimal_flag(FlagContext *c, u32 flag, u32 *wanted_val, u32 nb_wanted_val) {
@@ -58,11 +59,11 @@ void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_want
 
 }
 
-// s8 test_parse(void *c) {
-// 	(void)c;
-// 	ft_printf_fd(1, "Call test_parse OK\n");
-// 	return (TRUE);
-// }
+s8 test_parse(void *c) {
+	(void)c;
+	ft_printf_fd(1, "Call test_parse OK\n");
+	return (TRUE);
+}
 
 void init_flag_context(FlagContext *c, u8 value_handling) {
 	u32 max_val = 100;
@@ -78,8 +79,6 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, min_val);
-
-	// set_flag_option(c, DIGIT_FLAG, EOPT_PARSE_FUNC, test_parse);
 
 	add_flag_option(c, "string", STRING_FLAG, 's');
 	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, char_val);	
@@ -97,6 +96,11 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, OCTAL_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
+	add_flag_option(c, "kustom", KUSTOM_FLAG, 'k');
+	set_flag_option(c, KUSTOM_FLAG, EOPT_VALUE_TYPE, CUSTOM_VALUE);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_MULTIPLE_VAL, value_handling);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, test_parse);
 }
 
 

@@ -288,6 +288,17 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 		return (insert_string_val(opt, opt_val, str));
 	} else if (value_type == BINARY_VALUE && string_value_check(opt, str, str_is_binary)) {
 		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == CUSTOM_VALUE) {
+		if (!opt->parse) {
+			ft_printf_fd(2, "No parse function set for custom value\n");
+			free(opt_val);
+			return (ERROR_SET_VALUE);
+		}
+		if (opt->parse(str) == TRUE) {
+			return (insert_string_val(opt, opt_val, str));
+		}
+	} else {
+		ft_printf_fd(2, "Invalid value type %d\n", value_type);
 	}
 	free(opt_val);
     return (ERROR_SET_VALUE);
@@ -327,7 +338,6 @@ s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...) {
             break;
         case EOPT_PARSE_FUNC:
             opt_node->parse = va_arg(args, CustomValParse);
-            opt_node->parse(NULL);
             break;
         default:
             ft_printf_fd(2, "Invalid flag option\n");
