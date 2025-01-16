@@ -58,28 +58,45 @@ void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_want
 
 }
 
+// s8 test_parse(void *c) {
+// 	(void)c;
+// 	ft_printf_fd(1, "Call test_parse OK\n");
+// 	return (TRUE);
+// }
+
 void init_flag_context(FlagContext *c, u8 value_handling) {
+	u32 max_val = 100;
+	u32 min_val = 2;
+
+	u32 decimal_val = DECIMAL_VALUE;
+	u32 char_val = CHAR_VALUE;
+	u32 hexa_val = HEXA_VALUE;
+	u32 octal_val = OCTAL_VALUE;
+
 	add_flag_option(c, "count", DIGIT_FLAG, 'c');
-	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, decimal_val);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, 2);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, min_val);
+
+	// set_flag_option(c, DIGIT_FLAG, EOPT_PARSE_FUNC, test_parse);
 
 	add_flag_option(c, "string", STRING_FLAG, 's');
-	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
-	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, char_val);	
+	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, STRING_FLAG, EOPT_MIN_VAL, 2);
+	set_flag_option(c, STRING_FLAG, EOPT_MIN_VAL, min_val);
 
 	add_flag_option(c, "hexa-val", HEXA_FLAG, 'a');
-	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	
-	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, hexa_val);	
+	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
 	add_flag_option(c, "octal", OCTAL_FLAG, 'o');
-	set_flag_option(c, OCTAL_FLAG, EOPT_VALUE_TYPE, OCTAL_VALUE);	
-	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, 100);
+	set_flag_option(c, OCTAL_FLAG, EOPT_VALUE_TYPE, octal_val);	
+	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, OCTAL_FLAG, EOPT_MULTIPLE_VAL, value_handling);
+
 }
 
 

@@ -51,7 +51,7 @@ typedef union uopt_val {
 typedef struct OptNode {
     char			*full_name;     /* full name opt */
     t_list			*val_lst;		/* list of U_OptValues enum for storing value */
-    CustomValParse	*parse;			/* Function pointer to parse custom data or override basic parse func, null if regular type and don't want to override */
+    CustomValParse	parse;			/* Function pointer to parse custom data or override basic parse func, null if regular type and don't want to override */
 	u32				flag_val;       /* flag value, used with bitwise to create application flag */
 	u32				min_val;        /* min value for linked val, or strlen min for string store */
     u32				max_val;        /* max value for linked val, or strlen max for string store */
@@ -70,6 +70,7 @@ typedef enum e_FlagOptSet {
 	EOPT_MIN_VAL = 1U,
     EOPT_VALUE_TYPE=2U,
     EOPT_MULTIPLE_VAL=3U,
+	EOPT_PARSE_FUNC=4U,
 } E_FlagOptSet ;
 
 typedef struct flag_context {
@@ -165,9 +166,8 @@ void free_optvalue(OptNode *opt, U_OptValue *val);
 */
 s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char);
 
-s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt, u32 value);
-// set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
-
+// s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt, void *value);
+s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...);
 
 /**
  * @brief Display option list for debug

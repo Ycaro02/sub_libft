@@ -105,7 +105,8 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, char *full_name)
     opt->flag_val = flag_val;
 	opt->val_lst = NULL;
     opt->full_name = ft_strdup(full_name);
-	
+	opt->parse = NULL;
+
     opt->has_value = FALSE;
 	opt->multiple_val = VALUE_NO_OVERRID;
 	opt->value_type = OPT_NO_VALUE;

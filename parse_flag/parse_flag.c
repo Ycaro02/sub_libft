@@ -293,37 +293,49 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
     return (ERROR_SET_VALUE);
 }
 
-s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, u32 value) {
+s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...) {
+    va_list args;
+    OptNode *opt_node = search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val);
+    
 	if (!c) {
-		ft_printf_fd(2, "Invalid flag context\n");
-		return (FALSE);
-	}
-	OptNode *opt_node = search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val);
+        ft_printf_fd(2, "Invalid flag context\n");
+        return (FALSE);
+    }
+    
 	if (!opt_node) {
-		ft_printf_fd(2, "Flag val |%d| not found\n", flag_val);
-		return (FALSE);
-	}
-	switch (opt_to_set) {
-		case EOPT_VALUE_TYPE:
-			opt_node->value_type = (u8)value;
-			if (value != OPT_NO_VALUE) {
-				opt_node->has_value = TRUE;
-			}
-			break;
-		case EOPT_MAX_VAL:
-			opt_node->max_val = value;
-			break;
-		case EOPT_MIN_VAL:
-			opt_node->min_val = value;
-			break;
-		case EOPT_MULTIPLE_VAL:
-			opt_node->multiple_val = (u8)value;
-			break;
-		default:
-			ft_printf_fd(2, "Invalid flag option\n");
-			return (FALSE);
-	}
-	return (TRUE);
+        ft_printf_fd(2, "Flag val |%d| not found\n", flag_val);
+        return (FALSE);
+    }
+
+    va_start(args, opt_to_set);
+
+    switch (opt_to_set) {
+        case EOPT_VALUE_TYPE:
+            opt_node->value_type = (u8)va_arg(args, int);
+            if (opt_node->value_type != OPT_NO_VALUE) {
+                opt_node->has_value = TRUE;
+            }
+            break;
+        case EOPT_MAX_VAL:
+            opt_node->max_val = va_arg(args, u32);
+            break;
+        case EOPT_MIN_VAL:
+            opt_node->min_val = va_arg(args, u32);
+            break;
+        case EOPT_MULTIPLE_VAL:
+            opt_node->multiple_val = (s8)va_arg(args, int);
+            break;
+        case EOPT_PARSE_FUNC:
+            opt_node->parse = va_arg(args, CustomValParse);
+            opt_node->parse(NULL);
+            break;
+        default:
+            ft_printf_fd(2, "Invalid flag option\n");
+            va_end(args);
+            return (FALSE);
+    }
+    va_end(args);
+    return (TRUE);
 }
 
 /**
