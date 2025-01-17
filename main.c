@@ -65,6 +65,68 @@ s8 test_parse(void *c) {
 	return (TRUE);
 }
 
+s32 count_char(char *str, char c) {
+	s32 nb = 0, i = 0;
+	while (str && str[i]) {
+		if (str[i] == c) {
+			nb++;
+		}
+		i++;
+	}
+	return (nb);
+}
+
+s8 is_accepted_nmap_port_char(char c) {
+	if (!ft_isdigit(c) || c != '-') {
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
+s8 parse_nmap_port(void *data) {
+	char *str = data;
+	s32 i = 0, nb_hyphen = 0, str_len = 0;
+
+	if (!str) { return (FALSE); }
+
+	str_len = ft_strlen(str);
+	if (str_len == 0) { return (FALSE); }
+
+	while (str[i]) {
+		if (!is_accepted_nmap_port_char(str[i])) {
+			ft_printf_fd(2, "Incorect char detected in |%s| -> %c\n", str, str[i]);
+			return (FALSE);
+		}
+		i++;
+	}
+	if ((nb_hyphen = count_char(str, '-')) > 1) {
+		ft_printf_fd(2, "Error: nb hyphen greather than 1 -> %d\n", nb_hyphen);
+		return (FALSE);
+	} 
+
+	if (nb_hyphen == 1) {
+		if (str_len == 1) {
+			/* Special usage specify all port */
+			return (TRUE);
+		} else {
+			/* Here we need to split to compute the range of port to check */
+			char **port_range = ft_split_trim(str, '-');
+			u32 nb_port_string = double_char_size(port_range); 
+			if (nb_port_string != 2) {
+				ft_printf_fd(2, "Error: the split must be equal to 2 -> %u\n", nb_port_string);
+				return (FALSE);
+			}
+			// parse port section:
+			// create function is valid port or parse port than return the port in u32 value
+			// here we need to parse each string, detect if are a valid digit and valid port range
+			// check if the first port is lower than the second to detect the range
+		}
+		return (TRUE);
+	}
+	// no hyphen detect just parse port with the same logic than the parse port section
+	return (TRUE);
+}
+
 void init_flag_context(FlagContext *c, u8 value_handling) {
 	u32 max_val = 100;
 	u32 min_val = 2;
