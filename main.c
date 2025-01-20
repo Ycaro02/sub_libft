@@ -76,29 +76,22 @@ s32 count_char(char *str, char c) {
 	return (nb);
 }
 
+s8 is_space(char c) {
+	return ((c >= '\b' && c <= '\r') || c == ' ');
+}
+
 s8 is_accepted_nmap_port_char(char c) {
-	if (!ft_isdigit(c) || c != '-') {
+	if (!ft_isdigit(c) || !is_space(c) || c != '-' || c != ',') {
 		return (FALSE);
 	}
 	return (TRUE);
 }
 
-s8 parse_nmap_port(void *data) {
-	char *str = data;
-	s32 i = 0, nb_hyphen = 0, str_len = 0;
-
-	if (!str) { return (FALSE); }
+s8 parse_substring_port_str(char *str) {
+	s32 nb_hyphen = 0, str_len = 0;
 
 	str_len = ft_strlen(str);
-	if (str_len == 0) { return (FALSE); }
-
-	while (str[i]) {
-		if (!is_accepted_nmap_port_char(str[i])) {
-			ft_printf_fd(2, "Incorect char detected in |%s| -> %c\n", str, str[i]);
-			return (FALSE);
-		}
-		i++;
-	}
+	
 	if ((nb_hyphen = count_char(str, '-')) > 1) {
 		ft_printf_fd(2, "Error: nb hyphen greather than 1 -> %d\n", nb_hyphen);
 		return (FALSE);
@@ -113,6 +106,7 @@ s8 parse_nmap_port(void *data) {
 			char **port_range = ft_split_trim(str, '-');
 			u32 nb_port_string = double_char_size(port_range); 
 			if (nb_port_string != 2) {
+				free_double_char(port_range);
 				ft_printf_fd(2, "Error: the split must be equal to 2 -> %u\n", nb_port_string);
 				return (FALSE);
 			}
@@ -123,6 +117,45 @@ s8 parse_nmap_port(void *data) {
 		}
 		return (TRUE);
 	}
+}
+
+s8 parse_nmap_port(void *data) {
+	char *str = data;
+	s32 i = 0, nb_comma = 0, str_len = 0;
+
+	if (!str) { return (FALSE); }
+
+	str_len = ft_strlen(str);
+	if (str_len == 0) { return (FALSE); }
+
+	while (str[i]) {
+		if (!is_accepted_nmap_port_char(str[i])) {
+			ft_printf_fd(2, "Incorect char detected in |%s| -> %c\n", str, str[i]);
+			return (FALSE);
+		}
+		i++;
+	}
+
+	char **splited_comma = NULL;
+	if ((nb_comma = count_char(str, ',')) > 0) {
+		splited_comma = ft_split_trim(str, ',');
+		u32 nb_sub_string = double_char_size(splited_comma);
+		if (nb_sub_string > nb_comma) {
+			return (FALSE);
+			// error to check ?
+		}
+		for (s32 i = 0; splited_comma[i]; i++) {
+			s8 ret = parse_substring_port_str(splited_comma[i]);
+			if (!ret) {
+				free_double_char(splited_comma);
+				return (FALSE);
+			}		
+		}
+
+	}
+
+
+
 	// no hyphen detect just parse port with the same logic than the parse port section
 	return (TRUE);
 }
