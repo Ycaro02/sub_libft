@@ -81,10 +81,15 @@ s8 is_space(char c) {
 }
 
 s8 is_accepted_nmap_port_char(char c) {
-	if (!ft_isdigit(c) || !is_space(c) || c != '-' || c != ',') {
+	if (!ft_isdigit(c) && !is_space(c) && c != '-' && c != ',') {
 		return (FALSE);
 	}
 	return (TRUE);
+}
+
+s8 is_valid_port(char *port_str) {
+	s32 port = ft_atoi(port_str);
+	return (port >= 0 && port <= 65535);
 }
 
 s8 parse_substring_port_str(char *str) {
@@ -110,21 +115,29 @@ s8 parse_substring_port_str(char *str) {
 				ft_printf_fd(2, "Error: the split must be equal to 2 -> %u\n", nb_port_string);
 				return (FALSE);
 			}
-			// parse port section:
-			// create function is valid port or parse port than return the port in u32 value
-			// here we need to parse each string, detect if are a valid digit and valid port range
-			// check if the first port is lower than the second to detect the range
+			for (u32 i = 0; i < nb_port_string; i++) {
+				// TODO check if the first port is lower than the second to detect the range
+				if (!is_valid_port(port_range[i])) {
+					ft_printf_fd(2, "Parsing port error -> %s\n", port_range[i]);
+					return (FALSE);
+				}
+			}
+			return (TRUE);
 		}
-		return (TRUE);
 	}
+	if (!is_valid_port(str)) {
+		ft_printf_fd(2, "Parsing port error -> %s\n", str);
+		return (FALSE);
+	}
+	return (TRUE);
 }
 
 s8 parse_nmap_port(void *data) {
 	char *str = data;
-	s32 i = 0, nb_comma = 0, str_len = 0;
+	s32 i = 0, str_len = 0;
+	u32 nb_comma = 0;
 
 	if (!str) { return (FALSE); }
-
 	str_len = ft_strlen(str);
 	if (str_len == 0) { return (FALSE); }
 
@@ -140,9 +153,9 @@ s8 parse_nmap_port(void *data) {
 	if ((nb_comma = count_char(str, ',')) > 0) {
 		splited_comma = ft_split_trim(str, ',');
 		u32 nb_sub_string = double_char_size(splited_comma);
-		if (nb_sub_string > nb_comma) {
+		if (nb_sub_string != nb_comma + 1 && nb_sub_string != nb_comma) {
+			ft_printf_fd(2, "Incorect number of substring after coma split got: %u -> expected: %u or %u\n", nb_sub_string, nb_comma, nb_comma +1);
 			return (FALSE);
-			// error to check ?
 		}
 		for (s32 i = 0; splited_comma[i]; i++) {
 			s8 ret = parse_substring_port_str(splited_comma[i]);
@@ -151,11 +164,9 @@ s8 parse_nmap_port(void *data) {
 				return (FALSE);
 			}		
 		}
-
+		return (TRUE);
 	}
-
-
-
+	parse_substring_port_str(str);
 	// no hyphen detect just parse port with the same logic than the parse port section
 	return (TRUE);
 }
@@ -195,7 +206,7 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, KUSTOM_FLAG, EOPT_VALUE_TYPE, CUSTOM_VALUE);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_MAX_VAL, max_val);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, test_parse);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, parse_nmap_port);
 }
 
 
