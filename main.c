@@ -65,6 +65,8 @@ s8 test_parse(void *c) {
 	return (TRUE);
 }
 
+/* NMAP PARSING PORT START HERE */
+
 s32 count_char(char *str, char c) {
 	s32 nb = 0, i = 0;
 	while (str && str[i]) {
@@ -92,6 +94,12 @@ s8 is_valid_port(char *port_str) {
 	return (port >= 0 && port <= 65535);
 }
 
+// s8 insert_port_value() {
+	// U_OptValue *opt_val = NULL;;
+	// opt_val = opt_val_new();
+	// insert_digit_value -> must be declare in header file
+// }
+
 s8 parse_substring_port_str(char *str) {
 	s32 nb_hyphen = 0, str_len = 0;
 
@@ -118,24 +126,35 @@ s8 parse_substring_port_str(char *str) {
 			for (u32 i = 0; i < nb_port_string; i++) {
 				// TODO check if the first port is lower than the second to detect the range
 				if (!is_valid_port(port_range[i])) {
-					ft_printf_fd(2, "Parsing port error -> %s\n", port_range[i]);
+					ft_printf_fd(2, "Error: Parsing port -> %s\n", port_range[i]);
 					return (FALSE);
 				}
 			}
+			s32 port_start = ft_atoi(port_range[0]);
+			s32 port_end = ft_atoi(port_range[1]);
+			if (port_end < port_start) {
+				ft_printf_fd(2, "Your port range %d-%d is backwards. Did you mean %d-%d?\n", port_start, port_end, port_end, port_start);
+				return (FALSE);
+			}
+			// Here build list of port and add it to node_value
 			return (TRUE);
 		}
 	}
+	// here is simple port specify
 	if (!is_valid_port(str)) {
 		ft_printf_fd(2, "Parsing port error -> %s\n", str);
 		return (FALSE);
 	}
+	// Add port in node_value here
 	return (TRUE);
 }
 
-s8 parse_nmap_port(void *data) {
+s8 parse_nmap_port(void *optnode, void *data) {
+	OptNode *node = optnode; 
 	char *str = data;
 	s32 i = 0, str_len = 0;
 	u32 nb_comma = 0;
+
 
 	if (!str) { return (FALSE); }
 	str_len = ft_strlen(str);
@@ -170,6 +189,8 @@ s8 parse_nmap_port(void *data) {
 	// no hyphen detect just parse port with the same logic than the parse port section
 	return (TRUE);
 }
+
+/* NMAP PARSING PORT END HERE */
 
 void init_flag_context(FlagContext *c, u8 value_handling) {
 	u32 max_val = 100;

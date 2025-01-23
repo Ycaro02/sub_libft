@@ -294,8 +294,9 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 			free(opt_val);
 			return (ERROR_SET_VALUE);
 		}
-		if (opt->parse(str) == TRUE) {
-			return (insert_string_val(opt, opt_val, str));
+		if (opt->parse(opt, str) == TRUE) {
+			// return (insert_string_val(opt, opt_val, str));
+			return (SUCCESS_SET_VALUE);
 		}
 	} else {
 		ft_printf_fd(2, "Invalid value type %d\n", value_type);

@@ -35,8 +35,8 @@ typedef enum opt_value_overrid {
 } E_OptValueOverride;
 
 
-// function pointer typedef for custom value parse, void pointer must contain OptNode pointer
-typedef s8 (*CustomValParse)(void *);
+// function pointer typedef for custom value parse, first pointer must contain OptNode pointer, second are for data to parse
+typedef s8 (*CustomValParse)(void *opt_node, void *data);
 
 /* Error code for set_flag_value */
 #define ERROR_SET_VALUE	0
