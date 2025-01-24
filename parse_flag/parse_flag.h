@@ -196,6 +196,10 @@ s8  is_same_flag_val_opt(void *content, void *value);
 */
 void	*search_exist_opt(t_list *opt_lst, s8 (cmp()), void *data);
 
+s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str);
+s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str);
+U_OptValue *opt_val_new();
+
 /**
  * @brief Search for value linked to flag
  * @param argv pointer on argv from main

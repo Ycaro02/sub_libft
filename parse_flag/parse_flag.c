@@ -214,7 +214,7 @@ static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
 	return (SUCCESS_SET_VALUE);
 }
 
-static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
+s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
     u64 value = 0;
 
 	value = array_to_uint32(str);
@@ -238,7 +238,7 @@ static s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
 
 }
 
-static s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
+s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
 	s8 ret = 0;
 	
 	opt_val->str = ft_strdup(str);
@@ -294,7 +294,7 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 			free(opt_val);
 			return (ERROR_SET_VALUE);
 		}
-		if (opt->parse(opt, str) == TRUE) {
+		if (string_value_check(opt, str, NULL) && opt->parse(opt, str) == TRUE) {
 			// return (insert_string_val(opt, opt_val, str));
 			return (SUCCESS_SET_VALUE);
 		}

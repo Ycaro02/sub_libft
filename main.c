@@ -94,13 +94,15 @@ s8 is_valid_port(char *port_str) {
 	return (port >= 0 && port <= 65535);
 }
 
-// s8 insert_port_value() {
-	// U_OptValue *opt_val = NULL;;
-	// opt_val = opt_val_new();
-	// insert_digit_value -> must be declare in header file
-// }
+s8 insert_port_value(OptNode *node, char *str) {
+	U_OptValue *opt_val = NULL;;
+	opt_val = opt_val_new();
 
-s8 parse_substring_port_str(char *str) {
+	return (insert_digit_val(node, opt_val, str));
+}
+
+
+s8 parse_substring_port_str(OptNode *node, char *str) {
 	s32 nb_hyphen = 0, str_len = 0;
 
 	str_len = ft_strlen(str);
@@ -145,7 +147,10 @@ s8 parse_substring_port_str(char *str) {
 		ft_printf_fd(2, "Parsing port error -> %s\n", str);
 		return (FALSE);
 	}
-	// Add port in node_value here
+	s8 ret = insert_port_value(node, str);
+	if (ret != SUCCESS_SET_VALUE) {
+		return (FALSE);
+	}
 	return (TRUE);
 }
 
@@ -177,7 +182,7 @@ s8 parse_nmap_port(void *optnode, void *data) {
 			return (FALSE);
 		}
 		for (s32 i = 0; splited_comma[i]; i++) {
-			s8 ret = parse_substring_port_str(splited_comma[i]);
+			s8 ret = parse_substring_port_str(node, splited_comma[i]);
 			if (!ret) {
 				free_double_char(splited_comma);
 				return (FALSE);
@@ -185,7 +190,7 @@ s8 parse_nmap_port(void *optnode, void *data) {
 		}
 		return (TRUE);
 	}
-	parse_substring_port_str(str);
+	parse_substring_port_str(node, str);
 	// no hyphen detect just parse port with the same logic than the parse port section
 	return (TRUE);
 }
@@ -225,7 +230,7 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 
 	add_flag_option(c, "kustom", KUSTOM_FLAG, 'k');
 	set_flag_option(c, KUSTOM_FLAG, EOPT_VALUE_TYPE, CUSTOM_VALUE);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_MAX_VAL, 65535);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, parse_nmap_port);
 }
