@@ -19,7 +19,7 @@ void display_option_list(FlagContext flag_c)
 			U_OptValue *val = val_lst->content;
 			
 			ft_printf_fd(1, CYAN"[%d]: "RESET, i);
-			if (node->value_type == DECIMAL_VALUE || node->value_type == CUSTOM_VALUE) {
+			if (node->value_type == DECIMAL_VALUE) {
 				ft_printf_fd(1, ORANGE"|%u|\n"RESET, val->digit);
 			}
 			else if (node->value_type != OPT_NO_VALUE) {
@@ -170,7 +170,7 @@ s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char
 
 void free_optvalue(OptNode *opt, U_OptValue *val) {
 	
-	if ((opt->value_type > DECIMAL_VALUE && opt->value_type != CUSTOM_VALUE)) {
+	if ((opt->value_type > DECIMAL_VALUE)) {
 		free(val->str);
 	}
 }
