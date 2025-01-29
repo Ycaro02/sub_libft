@@ -36,7 +36,7 @@ typedef enum opt_value_overrid {
 
 
 // function pointer typedef for custom value parse, void pointer must contain OptNode pointer
-typedef s8 (*CustomValParse)(void *);
+typedef s8 (*CustomValParse)(void*, void *);
 
 /* Error code for set_flag_value */
 #define ERROR_SET_VALUE	0
@@ -60,6 +60,7 @@ typedef struct OptNode {
     u8				value_type;     /* value type */
     s8				multiple_val;   /* Accept multiple value or not */
     u8				has_value;      /* if value is linked */
+	s8				add_value_after_parse; /* Bool il we need to add value after parse function (default TRUE)*/ 
 }   OptNode;
 
 
@@ -83,11 +84,9 @@ typedef struct flag_context {
 /* parse cmd_line */
 t_list  *extract_args(int argc, char **argv);
 
-
 /****************************/
 /*		Parse flag			*/
 /****************************/
-
 
 /**
  * @brief Init the flag context structure

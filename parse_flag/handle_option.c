@@ -113,6 +113,7 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, char *full_name)
 	opt->value_type = OPT_NO_VALUE;
 	opt->max_val = OPT_NO_VALUE;
 	opt->min_val = OPT_NO_VALUE;
+	opt->add_value_after_parse = TRUE;
 	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);

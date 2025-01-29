@@ -93,7 +93,17 @@ s8 is_valid_port(char *port_str) {
 }
 
 
-s8 parse_substring_port_str(char *str) {
+s8 insert_port_string(OptNode *opt, char *str) {
+	U_OptValue *opt_val = NULL;;
+	opt_val = opt_val_new();
+	if (!opt_val) {
+		return (ERROR_SET_VALUE);
+	}
+	return (insert_string_val(opt, opt_val, str));
+
+}
+
+s8 parse_substring_port_str(OptNode *opt, char *str) {
 	s32 nb_hyphen = 0, str_len = 0;
 
 	str_len = ft_strlen(str);
@@ -125,6 +135,7 @@ s8 parse_substring_port_str(char *str) {
 				}
 			}
 			free_double_char(port_range);
+			insert_port_string(opt, str);
 			return (TRUE);
 		}
 	}
@@ -132,11 +143,13 @@ s8 parse_substring_port_str(char *str) {
 		ft_printf_fd(2, "Parsing port error -> %s\n", str);
 		return (FALSE);
 	}
+	insert_port_string(opt, str);
 	// insert port here
 	return (TRUE);
 }
 
-s8 parse_nmap_port(void *data) {
+s8 parse_nmap_port(void *opt_ptr, void *data) {
+	OptNode *opt = opt_ptr;
 	char *str = data;
 	s32 i = 0, str_len = 0;
 	u32 nb_comma = 0;
@@ -163,7 +176,7 @@ s8 parse_nmap_port(void *data) {
 			return (FALSE);
 		}
 		for (s32 i = 0; splited_comma[i]; i++) {
-			s8 ret = parse_substring_port_str(splited_comma[i]);
+			s8 ret = parse_substring_port_str(opt, splited_comma[i]);
 			if (!ret) {
 				free_double_char(splited_comma);
 				return (FALSE);
@@ -172,7 +185,7 @@ s8 parse_nmap_port(void *data) {
 		free_double_char(splited_comma);
 		return (TRUE);
 	}
-	parse_substring_port_str(str);
+	parse_substring_port_str(opt, str);
 	// no hyphen detect just parse port with the same logic than the parse port section
 	return (TRUE);
 }
