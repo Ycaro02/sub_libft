@@ -1,24 +1,6 @@
-#include "libft.h"
-#include "parse_flag/parse_flag.h"
+#include "nmap.h"
 
-// Go in libft
-s32 count_char(char *str, char c) {
-	s32 nb = 0, i = 0;
-	while (str && str[i]) {
-		if (str[i] == c) {
-			nb++;
-		}
-		i++;
-	}
-	return (nb);
-}
-
-s8 is_space(char c) {
-	return ((c >= '\b' && c <= '\r') || c == ' ');
-}
-//
-
-s8 is_accepted_nmap_port_char(char c) {
+static s8 is_accepted_nmap_port_char(char c) {
 	if (!ft_isdigit(c) && !is_space(c) && c != '-' && c != ',') {
 		return (FALSE);
 	}
@@ -30,7 +12,7 @@ s8 is_accepted_nmap_port_char(char c) {
  * @param port_str string to check
  * @return TRUE if valid, FALSE otherwise
  */
-s8 is_valid_port(char *port_str) {
+static s8 is_valid_port(char *port_str) {
 	s32 port = ft_atoi(port_str);
 	return (port >= 0 && port <= 65535);
 }
@@ -41,7 +23,7 @@ s8 is_valid_port(char *port_str) {
  * @param str string to insert
  * @return TRUE if success, FALSE otherwise
  */
-s8 insert_port_string(OptNode *opt, char *str) {
+static s8 insert_port_string(OptNode *opt, char *str) {
 	U_OptValue *opt_val = NULL;;
 	opt_val = opt_val_new();
 	if (!opt_val) {
@@ -57,7 +39,7 @@ s8 insert_port_string(OptNode *opt, char *str) {
  * @param port2 second port
  * @return TRUE if the first port is lower than the second, FALSE otherwise
  */
-s8 is_valid_port_range(char *port1, char *port2) {
+static s8 is_valid_port_range(char *port1, char *port2) {
 	s32 port1_int = ft_atoi(port1);
 	s32 port2_int = ft_atoi(port2);
 
@@ -73,7 +55,7 @@ s8 is_valid_port_range(char *port1, char *port2) {
  * @param port2 second port
  * @return string with port range
  */
-char *build_trim_port_range_string(char *port1, char *port2) {
+static char *build_trim_port_range_string(char *port1, char *port2) {
 	char *str = ft_strdup(port1);
 	str = ft_strjoin_free(str, "-", 'f');
 	str = ft_strjoin_free(str, port2, 'f');
@@ -85,7 +67,7 @@ char *build_trim_port_range_string(char *port1, char *port2) {
  * @param opt pointer on opt node
  * @param str string to parse
  */
-s8 parse_port_range(OptNode *opt, char *str) {
+static s8 parse_port_range(OptNode *opt, char *str) {
 	char	**port_range = ft_split_trim(str, '-');
 	u32		nb_port_string = double_char_size(port_range); 
 	
@@ -120,7 +102,7 @@ s8 parse_port_range(OptNode *opt, char *str) {
  * @param opt pointer on opt node
  * @param str string to parse
  */
-s8 parse_substring_port_str(OptNode *opt, char *str) {
+static s8 parse_substring_port_str(OptNode *opt, char *str) {
 	s32 nb_hyphen = 0, str_len = 0;
 
 	str_len = ft_strlen(str);
@@ -150,7 +132,7 @@ s8 parse_substring_port_str(OptNode *opt, char *str) {
 	return (TRUE);
 }
 
-s8 parse_port_string(OptNode *opt, char *str) {
+static s8 parse_port_string(OptNode *opt, char *str) {
 	char **splited_comma = NULL;
 	u32 nb_comma = 0;
 	
@@ -174,21 +156,101 @@ s8 parse_port_string(OptNode *opt, char *str) {
 		return (FALSE);
 }
 
+// main func to parse port
 s8 parse_nmap_port(void *opt_ptr, void *data) {
 	OptNode *opt = opt_ptr;
 	char *str = data;
 	s32 i = 0, str_len = 0;
 
-	if (!str) { return (FALSE); }
+	if (!str) { goto error_case; }
 	str_len = ft_strlen(str);
-	if (str_len == 0) { return (FALSE); }
+	if (str_len == 0) { goto error_case; }
 
 	while (str[i]) {
 		if (!is_accepted_nmap_port_char(str[i])) {
 			ft_printf_fd(2, "Incorect char detected in |%s| -> %c\n", str, str[i]);
-			return (FALSE);
+			goto error_case;
 		}
 		i++;
 	}
-	return (parse_port_string(opt, str));
+
+	s8 ret = parse_port_string(opt, str);
+	return (ret);
+
+	error_case:
+		return (FALSE);
+}
+
+
+
+
+
+static s8 port_already_present(t_list *int_port_list, s32 port) {
+	for (t_list *tmp = int_port_list; tmp; tmp = tmp->next) {
+		s32 *tmp_port = tmp->content;
+		if (*tmp_port == port) {
+			return (TRUE);
+		}
+	}
+	return (FALSE);
+}
+
+static void insert_port_digit(t_list **int_port_lst, U_OptValue *val) {
+	ft_printf_fd(1, "Port string: %s\n", val->str);
+	if (count_char(val->str, '-') == 0) {
+		if (port_already_present(*int_port_lst, ft_atoi(val->str))) {
+			return ;
+		}
+		s32 *tmp = malloc(sizeof(s32)); 
+		*tmp = ft_atoi(val->str);
+		ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
+	} else {
+		// here we need to generate all port between the range (maybe just genere number instead of string ?)
+		char **port_range = ft_split_trim(val->str, '-');
+		s32 port_start = ft_atoi(port_range[0]);
+		s32 port_end = ft_atoi(port_range[1]);
+		for (s32 i = port_start; i <= port_end; i++) {
+			if (port_already_present(*int_port_lst, i)) { continue; }
+			s32 *tmp = malloc(sizeof(s32));
+			*tmp = i;
+			ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
+		}
+		free_double_char(port_range);
+	}
+}
+
+static s32 sort_int(void *a, void *b) {
+	return (*(s32 *)a - *(s32 *)b) < 0;
+}
+
+static t_list *port_string_to_digit(t_list *port_string_lst) {
+	t_list *int_port_lst = NULL;
+	while (port_string_lst) {
+		insert_port_digit(&int_port_lst, port_string_lst->content);
+		port_string_lst = port_string_lst->next;
+	}
+	return (int_port_lst);
+}
+
+s8 extend_port_string(FlagContext *c, u32 flag) {
+	t_list *port_string_lst = get_opt_value(c->opt_lst, flag, FLAG_PORT);
+
+	t_list *int_port_lst = port_string_to_digit(port_string_lst);
+
+	list_sort(&int_port_lst, sort_int);
+	
+	// ft_printf_fd(1, "Port list: ");
+	// for (t_list *tmp = int_port_lst; tmp; tmp = tmp->next) {
+	// 	s32 *port = tmp->content;
+	// 	ft_printf_fd(1, "%d, ", *port);
+	// }
+
+	s32 nb_port = ft_lstsize(int_port_lst);
+
+	if (nb_port > MAX_PORT_SCAN) {
+		ft_printf_fd(2, "Too many port to scan\n");
+		ft_lstclear(&int_port_lst, free);
+		return (FALSE);
+	}
+	return (TRUE);
 }

@@ -1,4 +1,4 @@
-#include "basic_define.h"
+#include "../basic_define.h"
 
 s32 count_char(char *str, char c) {
 	s32 nb = 0, i = 0;

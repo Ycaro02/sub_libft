@@ -1,7 +1,6 @@
-#include "libft.h"
-#include "parse_flag/parse_flag.h"
-
-extern s8 parse_nmap_port(void *opt_ptr, void *data);
+// #include "libft.h"
+// #include "parse_flag/parse_flag.h"
+#include "nmap/nmap.h"
 
 enum flag_enum {
 	DIGIT_FLAG=1,
@@ -244,93 +243,32 @@ void test1_invalid_flag() {
 	}
 }
 
-s8 port_already_present(t_list *int_port_list, s32 port) {
-	for (t_list *tmp = int_port_list; tmp; tmp = tmp->next) {
-		s32 *tmp_port = tmp->content;
-		if (*tmp_port == port) {
-			return (TRUE);
-		}
-	}
-	return (FALSE);
-}
-
-void insert_port_digit(t_list **int_port_lst, U_OptValue *val) {
-	ft_printf_fd(1, "Port string: %s\n", val->str);
-	if (count_char(val->str, '-') == 0) {
-		if (port_already_present(*int_port_lst, ft_atoi(val->str))) {
-			return ;
-		}
-		s32 *tmp = malloc(sizeof(s32)); 
-		*tmp = ft_atoi(val->str);
-		ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
-	} else {
-		// here we need to generate all port between the range (maybe just genere number instead of string ?)
-		char **port_range = ft_split_trim(val->str, '-');
-		s32 port_start = ft_atoi(port_range[0]);
-		s32 port_end = ft_atoi(port_range[1]);
-		for (s32 i = port_start; i <= port_end; i++) {
-			if (port_already_present(*int_port_lst, i)) { continue; }
-			s32 *tmp = malloc(sizeof(s32));
-			*tmp = i;
-			ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
-		}
-	}
-}
-
-s32 sort_int(void *a, void *b) {
-	return (*(s32 *)a - *(s32 *)b) < 0;
-}
-
-t_list *port_string_to_digit(t_list *port_string_lst) {
-	t_list *int_port_lst = NULL;
-	while (port_string_lst) {
-		insert_port_digit(&int_port_lst, port_string_lst->content);
-		port_string_lst = port_string_lst->next;
-	}
-	return (int_port_lst);
-}
-
-void extend_port_string(FlagContext *c, u32 flag) {
-	t_list *port_string_lst = get_opt_value(c->opt_lst, flag, KUSTOM_FLAG);
-
-	t_list *int_port_lst = port_string_to_digit(port_string_lst);
-
-	list_sort(&int_port_lst, sort_int);
-	
-	ft_printf_fd(1, "Port list: ");
-	for (t_list *tmp = int_port_lst; tmp; tmp = tmp->next) {
-		s32 *port = tmp->content;
-		ft_printf_fd(1, "%d, ", *port);
-	}
-
-
-}
 
 void test_input(int argc, char **argv) {
-	FlagContext *c = flag_context_init(argv);
-	init_flag_context(c, VALUE_APPEND);
+	// FlagContext *c = flag_context_init(argv);
+	// init_flag_context(c, VALUE_APPEND);
+
+	FlagContext *c = init_nmap_flag(argv);
 	u32 flag = parse_flag(argc, argv, c, &c->error);
+	
 	if (c->error) {
 		ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
 		free_flag_context(c);
 		return ;
 	}
-	// display_flags(c, flag);
-	
+	display_flags(c->opt_str, flag);
 	display_option_list(*c);
-	
 	extend_port_string(c, flag);
-
 	free_flag_context(c);
 }
 
 int main (int argc, char **argv) {
 
-	test1_append();
-	test2_append();
-	test1_override();
-	test2_override();
-	test1_no_override();
+	// test1_append();
+	// test2_append();
+	// test1_override();
+	// test2_override();
+	// test1_no_override();
 	test_input(argc, argv);
 	// test1_invalid_flag();
 	return 0;

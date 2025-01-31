@@ -327,8 +327,9 @@ s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...) {
             break;
 		case EOPT_ADD_VAL_AFTER_PARSE:
 			opt_node->add_value_after_parse = (s8)va_arg(args, int);
+			break;
         default:
-            ft_printf_fd(2, "Invalid flag option\n");
+            ft_printf_fd(2, "Invalid flag option, %d\n", opt_to_set);
             va_end(args);
             return (FALSE);
     }
