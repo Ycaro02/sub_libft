@@ -233,7 +233,10 @@ static t_list *port_string_to_digit(t_list *port_string_lst) {
 }
 
 s8 extend_port_string(FlagContext *c, u32 flag) {
+	// Maybe just store the entire string and get the value here
 	t_list *port_string_lst = get_opt_value(c->opt_lst, flag, FLAG_PORT);
+
+	// then call nmap parse port here and continue same logic 
 
 	t_list *int_port_lst = port_string_to_digit(port_string_lst);
 
