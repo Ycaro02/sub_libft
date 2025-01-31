@@ -115,24 +115,7 @@ static void *check_for_flag(char *str, FlagContext *flag_c, u32 *flags, s8 *erro
 			break ;
 		}
 	}
-
-	// TODO: need to implement logic for multiple value handling (no accepted overide or append)
-	// if (opt && opt->has_value) {
-	// 	if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
-	// 		// ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
-	// 		return (NULL);
-	// 	}
-	// }
     return (opt);
-}
-
-/** 
- * @brief Check if char is space
- * @param c char to check
- * @return 1 if space, 0 otherwise
-*/
-static s8 is_char_space(char c) {
-    return (c == ' ' || (c >= '\t' && c <= '\r'));
 }
 
 /** 
@@ -143,7 +126,7 @@ static s8 is_char_space(char c) {
 static char find_next_no_space(char *str) {
     int i = 0;
 
-    while (str[i] && is_char_space(str[i])) {
+    while (str[i] && is_space(str[i])) {
         ++i;
     }
     return (str[i]);
@@ -295,7 +278,10 @@ static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
 			return (ERROR_SET_VALUE);
 		}
 		if (string_value_check(opt, str, NULL) && opt->parse(opt, str) == TRUE) {
-			return (insert_string_val(opt, opt_val, str));
+			if (opt->add_value_after_parse) {
+				return (insert_string_val(opt, opt_val, str));
+			}
+			return (SUCCESS_SET_VALUE);
 		}
 	} else {
 		ft_printf_fd(2, "Invalid value type %d\n", value_type);
@@ -339,6 +325,8 @@ s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...) {
         case EOPT_PARSE_FUNC:
             opt_node->parse = va_arg(args, CustomValParse);
             break;
+		case EOPT_ADD_VAL_AFTER_PARSE:
+			opt_node->add_value_after_parse = (s8)va_arg(args, int);
         default:
             ft_printf_fd(2, "Invalid flag option\n");
             va_end(args);
@@ -393,8 +381,14 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
     return (TRUE);
 }
 
-// ft_printf_fd(2, CYAN"update opt |%c|, curr val %d -> ", opt->flag_char, opt->value);
-// ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
+
+t_list *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find) {
+	OptNode *opt = get_opt_node(opt_lst, flag, to_find);
+	if (!opt) {
+		return (NULL);
+	}
+	return (opt->val_lst);
+}
 
 /**
  * @brief Get option value from flag context
@@ -449,12 +443,6 @@ u32 parse_flag(int argc, char **argv, FlagContext *flag_c, s8 *error)
 		/* Reset long format bool */
 		long_format_bool = CHAR_FORMAT;
     }
-
-    // for (int i = 0; i < argc; ++i) {
-    //     ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
-    // }
-
-    // display_flags(flag_c->opt_str, flags);
 	return (flags);
 }
 

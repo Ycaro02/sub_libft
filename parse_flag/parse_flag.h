@@ -14,6 +14,8 @@
 #define PARSE_FLAG_ERR_MSG_WRONG_ARGS   RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry %s -h for more information\n"RESET
 
 
+#define DEFAULT_MAX_VAL 50000U
+
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
 #define LONG_FORMAT		1U          /* long format for check_for_flag */
 
@@ -24,7 +26,6 @@ typedef enum opt_value_type {
 	OCTAL_VALUE=3U,		/* octal vase for value */
 	BINARY_VALUE=4U,	/* binary base for value */
 	CHAR_VALUE=5U,		/* char value all string accepted*/
-	// TODO implement it, reserve field in node structure for func pointer and provide a way to set it in set flag option
 	CUSTOM_VALUE=6U,	/* Custom value, user must provide function pointer to parse it, return TRUE or 1 for accepted value, 0 or FALSE to reject it */
 } E_OptValueType;
 
@@ -72,6 +73,7 @@ typedef enum e_FlagOptSet {
     EOPT_VALUE_TYPE=2U,
     EOPT_MULTIPLE_VAL=3U,
 	EOPT_PARSE_FUNC=4U,
+	EOPT_ADD_VAL_AFTER_PARSE=5U,
 } E_FlagOptSet ;
 
 typedef struct flag_context {
@@ -146,14 +148,17 @@ s8  has_flag(u32 flags, u32 flag_val);
 /* has flag wrapper */
 s8  flag_already_present(u32 flags, u32 flag_val);
 
-
+/**
+ * @brief Reverse flag value
+ * @param flags pointer on flags to be modified
+ * @param flag_val flag value to reverse
+*/
 void	reverse_flag(u32 *flags, u32 flag_val);
 
 
 /****************************/
 /*		Handle Option		*/
 /****************************/
-void free_optvalue(OptNode *opt, U_OptValue *val);
 
 /**
  *	@brief Add flag option
@@ -195,18 +200,30 @@ s8  is_same_flag_val_opt(void *content, void *value);
 */
 void	*search_exist_opt(t_list *opt_lst, s8 (cmp()), void *data);
 
-s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str);
-s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str);
-U_OptValue *opt_val_new();
+/**
+ * @brief get opt values
+ * @param opt_lst list of opt node
+ * @param flag flag to check
+ * @param to_find flag to find
+ * @return t_list of U_opt_value if found, NULL otherwise
+ */
+t_list *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find);
 
 /**
- * @brief Search for value linked to flag
- * @param argv pointer on argv from main
- * @param i pointer on first argv index counter
- * @param opt pointer on opt node to update
- * @param long_format_bool long format or short (char) format
- * @return 1 if found, 0 otherwise
+ * @brief free optValue union
+ * @param opt opt node
+ * @param val value to free
+ */
+void free_optvalue(OptNode *opt, U_OptValue *val);
+
+/**
+ * @brief Alloc OptValue Unions
+ * @return allocated U_OptValue pointer
 */
-// int		search_opt_value(char **argv, int *i, OptNode *opt, u8 long_format_bool);
+U_OptValue *opt_val_new();
+
+
+s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str);
+s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str);
 
 #endif /* PARSE_FLAG_H */

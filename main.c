@@ -1,6 +1,7 @@
 #include "libft.h"
-// #include "list/linked_list.h"
 #include "parse_flag/parse_flag.h"
+
+extern s8 parse_nmap_port(void *opt_ptr, void *data);
 
 enum flag_enum {
 	DIGIT_FLAG=1,
@@ -55,8 +56,6 @@ void verify_string_flag(FlagContext *c, u32 flag, char **wanted_val, u32 nb_want
 	if (i != nb_wanted_val) {
 		ft_printf_fd(2, "Error: wanted %d, got %d\n", nb_wanted_val, i);
 	}
-	// ft_printf_fd(2, "All test passed for '%c'\n", opt->flag_char);
-
 }
 
 s8 test_parse(void *c) {
@@ -65,167 +64,34 @@ s8 test_parse(void *c) {
 	return (TRUE);
 }
 
-s32 count_char(char *str, char c) {
-	s32 nb = 0, i = 0;
-	while (str && str[i]) {
-		if (str[i] == c) {
-			nb++;
-		}
-		i++;
-	}
-	return (nb);
-}
-
-s8 is_space(char c) {
-	return ((c >= '\b' && c <= '\r') || c == ' ');
-}
-
-s8 is_accepted_nmap_port_char(char c) {
-	if (!ft_isdigit(c) && !is_space(c) && c != '-' && c != ',') {
-		return (FALSE);
-	}
-	return (TRUE);
-}
-
-s8 is_valid_port(char *port_str) {
-	s32 port = ft_atoi(port_str);
-	return (port >= 0 && port <= 65535);
-}
-
-
-s8 insert_port_string(OptNode *opt, char *str) {
-	U_OptValue *opt_val = NULL;;
-	opt_val = opt_val_new();
-	if (!opt_val) {
-		return (ERROR_SET_VALUE);
-	}
-	return (insert_string_val(opt, opt_val, str));
-
-}
-
-s8 parse_substring_port_str(OptNode *opt, char *str) {
-	s32 nb_hyphen = 0, str_len = 0;
-
-	str_len = ft_strlen(str);
-	
-	if ((nb_hyphen = count_char(str, '-')) > 1) {
-		ft_printf_fd(2, "Error: nb hyphen greather than 1 -> %d\n", nb_hyphen);
-		return (FALSE);
-	} 
-
-	if (nb_hyphen == 1) {
-		if (str_len == 1) {
-			/* Special usage specify all port */
-			return (TRUE);
-		} else {
-			/* Here we need to split to compute the range of port to check */
-			char **port_range = ft_split_trim(str, '-');
-			u32 nb_port_string = double_char_size(port_range); 
-			if (nb_port_string != 2) {
-				free_double_char(port_range);
-				ft_printf_fd(2, "Error: the split must be equal to 2 -> %u\n", nb_port_string);
-				return (FALSE);
-			}
-			for (u32 i = 0; i < nb_port_string; i++) {
-				// TODO check if the first port is lower than the second to detect the range
-				if (!is_valid_port(port_range[i])) {
-					free_double_char(port_range);
-					ft_printf_fd(2, "Parsing port error -> %s\n", port_range[i]);
-					return (FALSE);
-				}
-			}
-			free_double_char(port_range);
-			insert_port_string(opt, str);
-			return (TRUE);
-		}
-	}
-	if (!is_valid_port(str)) {
-		ft_printf_fd(2, "Parsing port error -> %s\n", str);
-		return (FALSE);
-	}
-	insert_port_string(opt, str);
-	// insert port here
-	return (TRUE);
-}
-
-s8 parse_nmap_port(void *opt_ptr, void *data) {
-	OptNode *opt = opt_ptr;
-	char *str = data;
-	s32 i = 0, str_len = 0;
-	u32 nb_comma = 0;
-
-	if (!str) { return (FALSE); }
-	str_len = ft_strlen(str);
-	if (str_len == 0) { return (FALSE); }
-
-	while (str[i]) {
-		if (!is_accepted_nmap_port_char(str[i])) {
-			ft_printf_fd(2, "Incorect char detected in |%s| -> %c\n", str, str[i]);
-			return (FALSE);
-		}
-		i++;
-	}
-
-	char **splited_comma = NULL;
-	if ((nb_comma = count_char(str, ',')) > 0) {
-		splited_comma = ft_split_trim(str, ',');
-		u32 nb_sub_string = double_char_size(splited_comma);
-		if (nb_sub_string != nb_comma + 1 && nb_sub_string != nb_comma) {
-			ft_printf_fd(2, "Incorect number of substring after coma split got: %u -> expected: %u or %u\n", nb_sub_string, nb_comma, nb_comma +1);
-			free_double_char(splited_comma);
-			return (FALSE);
-		}
-		for (s32 i = 0; splited_comma[i]; i++) {
-			s8 ret = parse_substring_port_str(opt, splited_comma[i]);
-			if (!ret) {
-				free_double_char(splited_comma);
-				return (FALSE);
-			}		
-		}
-		free_double_char(splited_comma);
-		return (TRUE);
-	}
-	parse_substring_port_str(opt, str);
-	// no hyphen detect just parse port with the same logic than the parse port section
-	return (TRUE);
-}
-
 void init_flag_context(FlagContext *c, u8 value_handling) {
-	u32 max_val = 100;
-	u32 min_val = 2;
-
-	u32 decimal_val = DECIMAL_VALUE;
-	u32 char_val = CHAR_VALUE;
-	u32 hexa_val = HEXA_VALUE;
-	u32 octal_val = OCTAL_VALUE;
-
 	add_flag_option(c, "count", DIGIT_FLAG, 'c');
-	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, decimal_val);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, DIGIT_FLAG, EOPT_VALUE_TYPE, DECIMAL_VALUE);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, DIGIT_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, min_val);
+	set_flag_option(c, DIGIT_FLAG, EOPT_MIN_VAL, 2);
 
 	add_flag_option(c, "string", STRING_FLAG, 's');
-	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, char_val);	
-	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, STRING_FLAG, EOPT_VALUE_TYPE, CHAR_VALUE);	
+	set_flag_option(c, STRING_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, STRING_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, STRING_FLAG, EOPT_MIN_VAL, min_val);
+	set_flag_option(c, STRING_FLAG, EOPT_MIN_VAL, 2);
 
 	add_flag_option(c, "hexa-val", HEXA_FLAG, 'a');
-	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, hexa_val);	
-	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, HEXA_FLAG, EOPT_VALUE_TYPE, HEXA_VALUE);	
+	set_flag_option(c, HEXA_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, HEXA_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
 	add_flag_option(c, "octal", OCTAL_FLAG, 'o');
-	set_flag_option(c, OCTAL_FLAG, EOPT_VALUE_TYPE, octal_val);	
-	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, max_val);
+	set_flag_option(c, OCTAL_FLAG, EOPT_VALUE_TYPE, OCTAL_VALUE);	
+	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, OCTAL_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
 	add_flag_option(c, "kustom", KUSTOM_FLAG, 'k');
 	set_flag_option(c, KUSTOM_FLAG, EOPT_VALUE_TYPE, CUSTOM_VALUE);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_MAX_VAL, 65535);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, parse_nmap_port);
+	set_flag_option(c, KUSTOM_FLAG, EOPT_ADD_VAL_AFTER_PARSE, FALSE);
 }
 
 
@@ -261,7 +127,7 @@ int call_tester( int argc, char **argv, u32 *wanted_digit, u32 nb_wanted_digit, 
 
 
 void test1_append() {
-	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa", "-c", "40", "-o" "0127"};
+	char *argv[] = {"./test", "--count", "10", "-c", "20", "-s", "string1", "-c", "30", "-s", "KOALA", "-a", "ffaa", "-a", "01234fa", "-c", "40", "-o", "0127"};
 	int argc = (sizeof(argv) / sizeof(char *)); 
 	u32 wanted_digit[] = {10, 20, 30, 40};
 	char *wanted_str[] = { "string1", "KOALA"}; 
@@ -378,7 +244,67 @@ void test1_invalid_flag() {
 	}
 }
 
+s8 port_already_present(t_list *int_port_list, s32 port) {
+	for (t_list *tmp = int_port_list; tmp; tmp = tmp->next) {
+		s32 *tmp_port = tmp->content;
+		if (*tmp_port == port) {
+			return (TRUE);
+		}
+	}
+	return (FALSE);
+}
 
+void insert_port_digit(t_list **int_port_lst, U_OptValue *val) {
+	ft_printf_fd(1, "Port string: %s\n", val->str);
+	if (count_char(val->str, '-') == 0) {
+		if (port_already_present(*int_port_lst, ft_atoi(val->str))) {
+			return ;
+		}
+		s32 *tmp = malloc(sizeof(s32)); 
+		*tmp = ft_atoi(val->str);
+		ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
+	} else {
+		// here we need to generate all port between the range (maybe just genere number instead of string ?)
+		char **port_range = ft_split_trim(val->str, '-');
+		s32 port_start = ft_atoi(port_range[0]);
+		s32 port_end = ft_atoi(port_range[1]);
+		for (s32 i = port_start; i <= port_end; i++) {
+			if (port_already_present(*int_port_lst, i)) { continue; }
+			s32 *tmp = malloc(sizeof(s32));
+			*tmp = i;
+			ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
+		}
+	}
+}
+
+s32 sort_int(void *a, void *b) {
+	return (*(s32 *)a - *(s32 *)b) < 0;
+}
+
+t_list *port_string_to_digit(t_list *port_string_lst) {
+	t_list *int_port_lst = NULL;
+	while (port_string_lst) {
+		insert_port_digit(&int_port_lst, port_string_lst->content);
+		port_string_lst = port_string_lst->next;
+	}
+	return (int_port_lst);
+}
+
+void extend_port_string(FlagContext *c, u32 flag) {
+	t_list *port_string_lst = get_opt_value(c->opt_lst, flag, KUSTOM_FLAG);
+
+	t_list *int_port_lst = port_string_to_digit(port_string_lst);
+
+	list_sort(&int_port_lst, sort_int);
+	
+	ft_printf_fd(1, "Port list: ");
+	for (t_list *tmp = int_port_lst; tmp; tmp = tmp->next) {
+		s32 *port = tmp->content;
+		ft_printf_fd(1, "%d, ", *port);
+	}
+
+
+}
 
 void test_input(int argc, char **argv) {
 	FlagContext *c = flag_context_init(argv);
@@ -390,7 +316,11 @@ void test_input(int argc, char **argv) {
 		return ;
 	}
 	// display_flags(c, flag);
+	
 	display_option_list(*c);
+	
+	extend_port_string(c, flag);
+
 	free_flag_context(c);
 }
 

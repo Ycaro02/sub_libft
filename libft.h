@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2025/01/17 13:31:48 by nfour            ###   ########.fr       */
+/*   Updated: 2025/01/31 14:51:27 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,9 @@ void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 char	*str_tolower(char *str);
+
+s32 count_char(char *str, char c);
+s8 is_space(char c);
 
 int		fast_strcmp(const char *s1, const char *s2);
 int		fast_strlen(const char *s);
