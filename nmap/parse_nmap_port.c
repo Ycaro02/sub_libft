@@ -23,13 +23,16 @@ static s8 is_valid_port(char *port_str) {
  * @param str string to insert
  * @return TRUE if success, FALSE otherwise
  */
-static s8 insert_port_string(OptNode *opt, char *str) {
-	U_OptValue *opt_val = NULL;;
-	opt_val = opt_val_new();
-	if (!opt_val) {
-		return (ERROR_SET_VALUE);
-	}
-	return (insert_string_val(opt, opt_val, str));
+// static s8 insert_port_string(OptNode *opt, char *str) {
+static s8 insert_port_string(t_list **lst, char *str) {
+	ft_lstadd_back(lst, ft_lstnew(ft_strdup(str)));
+	return (TRUE);
+	// U_OptValue *opt_val = NULL;;
+	// opt_val = opt_val_new();
+	// if (!opt_val) {
+	// 	return (ERROR_SET_VALUE);
+	// }
+	// return (insert_string_val(opt, opt_val, str));
 
 }
 
@@ -67,7 +70,7 @@ static char *build_trim_port_range_string(char *port1, char *port2) {
  * @param opt pointer on opt node
  * @param str string to parse
  */
-static s8 parse_port_range(OptNode *opt, char *str) {
+static s8 parse_port_range(t_list **list, char *str) {
 	char	**port_range = ft_split_trim(str, '-');
 	u32		nb_port_string = double_char_size(port_range); 
 	
@@ -89,7 +92,7 @@ static s8 parse_port_range(OptNode *opt, char *str) {
 	char *trim_str = build_trim_port_range_string(port_range[0], port_range[1]);
 
 	free_double_char(port_range);
-	insert_port_string(opt, trim_str);
+	insert_port_string(list, trim_str);
 	return (TRUE);
 
 	error_case:
@@ -102,7 +105,7 @@ static s8 parse_port_range(OptNode *opt, char *str) {
  * @param opt pointer on opt node
  * @param str string to parse
  */
-static s8 parse_substring_port_str(OptNode *opt, char *str) {
+static s8 parse_substring_port_str(t_list **list, char *str) {
 	s32 nb_hyphen = 0, str_len = 0;
 
 	str_len = ft_strlen(str);
@@ -116,10 +119,10 @@ static s8 parse_substring_port_str(OptNode *opt, char *str) {
 	if (nb_hyphen == 1) {
 		/* Special usage specify all port */
 		if (str_len == 1) {
-			insert_port_string(opt, "0-65535");
+			insert_port_string(list, DEFAULT_RANGE_PORT_STR);
 			return (TRUE);
 		} 
-		return (parse_port_range(opt, str));
+		return (parse_port_range(list, str));
 	}
 
 	/* Here we had a single port */
@@ -127,15 +130,17 @@ static s8 parse_substring_port_str(OptNode *opt, char *str) {
 		ft_printf_fd(2, "Parsing port error -> %s\n", str);
 		return (FALSE);
 	}
-	insert_port_string(opt, str);
+	insert_port_string(list, str);
 	// insert port here
 	return (TRUE);
 }
 
-static s8 parse_port_string(OptNode *opt, char *str) {
+static t_list *parse_port_string(char *str) {
 	char **splited_comma = NULL;
 	u32 nb_comma = 0;
-	
+	t_list *lst = NULL;
+
+
 	if ((nb_comma = count_char(str, ',')) > 0) {
 		splited_comma = ft_split_trim(str, ',');
 		u32 nb_sub_string = double_char_size(splited_comma);
@@ -144,16 +149,19 @@ static s8 parse_port_string(OptNode *opt, char *str) {
 			goto error_case;
 		}
 		for (s32 i = 0; splited_comma[i]; i++) {
-			if (!parse_substring_port_str(opt, splited_comma[i])) { goto error_case; }		
+			if (!parse_substring_port_str(&lst, splited_comma[i])) { goto error_case; }		
 		}
 		free_double_char(splited_comma);
-		return (TRUE);
+		// return (TRUE);
+		return (lst);
 	}
-	return (parse_substring_port_str(opt, str));
+	// return (parse_substring_port_str(&lst, str));
+	return (lst);
 
 	error_case:
+		// need to lst clear
 		free_double_char(splited_comma);
-		return (FALSE);
+		return (NULL);
 }
 
 // main func to parse port
@@ -174,8 +182,10 @@ s8 parse_nmap_port(void *opt_ptr, void *data) {
 		i++;
 	}
 
-	s8 ret = parse_port_string(opt, str);
-	return (ret);
+	return (TRUE);
+
+	// s8 ret = parse_port_string(opt, str);
+	// return (ret);
 
 	error_case:
 		return (FALSE);
@@ -234,19 +244,23 @@ static t_list *port_string_to_digit(t_list *port_string_lst) {
 
 s8 extend_port_string(FlagContext *c, u32 flag) {
 	// Maybe just store the entire string and get the value here
-	t_list *port_string_lst = get_opt_value(c->opt_lst, flag, FLAG_PORT);
+	t_list *opt_val = get_opt_value(c->opt_lst, flag, FLAG_PORT);
+
+	char *brut_string = ((U_OptValue *)opt_val)->str;
+
+	t_list *port_lst = parse_port_string(brut_string);
 
 	// then call nmap parse port here and continue same logic 
 
-	t_list *int_port_lst = port_string_to_digit(port_string_lst);
+	t_list *int_port_lst = port_string_to_digit(port_lst);
 
 	list_sort(&int_port_lst, sort_int);
 	
-	// ft_printf_fd(1, "Port list: ");
-	// for (t_list *tmp = int_port_lst; tmp; tmp = tmp->next) {
-	// 	s32 *port = tmp->content;
-	// 	ft_printf_fd(1, "%d, ", *port);
-	// }
+	ft_printf_fd(1, "Port list: ");
+	for (t_list *tmp = int_port_lst; tmp; tmp = tmp->next) {
+		s32 *port = tmp->content;
+		ft_printf_fd(1, "%d, ", *port);
+	}
 
 	s32 nb_port = ft_lstsize(int_port_lst);
 

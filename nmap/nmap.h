@@ -139,10 +139,10 @@ FT_INLINE FlagContext *init_nmap_flag(char **argv) {
 	// Init port option
 	add_flag_option(c, FLAG_PORT_STR, FLAG_PORT, FLAG_PORT_CHAR);
 	set_flag_option(c, FLAG_PORT, EOPT_VALUE_TYPE, CUSTOM_VALUE);
-	set_flag_option(c, FLAG_PORT, EOPT_MULTIPLE_VAL, VALUE_APPEND);
+	set_flag_option(c, FLAG_PORT, EOPT_MULTIPLE_VAL, VALUE_NO_OVERRID);
 	// Maybe need to refact parse nmap port, avoid to store splited string in opt_node data, this cause no desired behavior for VALUE_APPEND ...
 	set_flag_option(c, FLAG_PORT, EOPT_PARSE_FUNC, parse_nmap_port);
-	set_flag_option(c, FLAG_PORT, EOPT_ADD_VAL_AFTER_PARSE, FALSE);
+	// set_flag_option(c, FLAG_PORT, EOPT_ADD_VAL_AFTER_PARSE, FALSE);
 
 	// Init help option
 	add_flag_option(c, FLAG_HELP_STR, FLAG_HELP, FLAG_HELP_CHAR);
