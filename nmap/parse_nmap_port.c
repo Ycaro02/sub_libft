@@ -156,6 +156,7 @@ static t_list *parse_port_string(char *str) {
 		return (lst);
 	}
 	// return (parse_substring_port_str(&lst, str));
+	parse_substring_port_str(&lst, str);
 	return (lst);
 
 	error_case:
@@ -205,18 +206,17 @@ static s8 port_already_present(t_list *int_port_list, s32 port) {
 	return (FALSE);
 }
 
-static void insert_port_digit(t_list **int_port_lst, U_OptValue *val) {
-	ft_printf_fd(1, "Port string: %s\n", val->str);
-	if (count_char(val->str, '-') == 0) {
-		if (port_already_present(*int_port_lst, ft_atoi(val->str))) {
+static void insert_port_digit(t_list **int_port_lst, char* str) {
+	if (count_char(str, '-') == 0) {
+		if (port_already_present(*int_port_lst, ft_atoi(str))) {
 			return ;
 		}
 		s32 *tmp = malloc(sizeof(s32)); 
-		*tmp = ft_atoi(val->str);
+		*tmp = ft_atoi(str);
 		ft_lstadd_back(int_port_lst, ft_lstnew(tmp));
 	} else {
 		// here we need to generate all port between the range (maybe just genere number instead of string ?)
-		char **port_range = ft_split_trim(val->str, '-');
+		char **port_range = ft_split_trim(str, '-');
 		s32 port_start = ft_atoi(port_range[0]);
 		s32 port_end = ft_atoi(port_range[1]);
 		for (s32 i = port_start; i <= port_end; i++) {
@@ -246,12 +246,12 @@ s8 extend_port_string(FlagContext *c, u32 flag) {
 	// Maybe just store the entire string and get the value here
 	t_list *opt_val = get_opt_value(c->opt_lst, flag, FLAG_PORT);
 
-	char *brut_string = ((U_OptValue *)opt_val)->str;
+	char *brut_string = ((U_OptValue *)opt_val->content)->str;
+
 
 	t_list *port_lst = parse_port_string(brut_string);
 
 	// then call nmap parse port here and continue same logic 
-
 	t_list *int_port_lst = port_string_to_digit(port_lst);
 
 	list_sort(&int_port_lst, sort_int);
@@ -269,5 +269,8 @@ s8 extend_port_string(FlagContext *c, u32 flag) {
 		ft_lstclear(&int_port_lst, free);
 		return (FALSE);
 	}
+	
+	ft_lstclear(&port_lst, free);
+	ft_lstclear(&int_port_lst, free);
 	return (TRUE);
 }
