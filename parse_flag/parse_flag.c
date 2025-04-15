@@ -15,6 +15,20 @@ void display_flags(char *all_flag, int flags) {
     ft_printf_fd(2, "\n");
 }
 
+FlagContext *flag_context_init(char **argv) {
+	FlagContext *c = ft_calloc(sizeof(FlagContext), 1);
+
+	if (!c) {
+		ft_printf_fd(2, "malloc error flag context init\n");
+		return (NULL);
+	}
+
+	c->prg_name = argv[0];
+	c->error = 0;
+	return (c);
+}
+
+
 /** 
  *	@brief Get flag value from char
  *	@param flag_c flag context
@@ -101,22 +115,7 @@ static void *check_for_flag(char *str, FlagContext *flag_c, u32 *flags, s8 *erro
 			break ;
 		}
 	}
-	if (opt && opt->has_value) {
-		if (opt->value_type == CHAR_VALUE && opt->val.str != NULL) {
-			// ft_printf_fd(2, "%s: check_for_flag error value already set for flag %c\n", flag_c->prg_name, opt->flag_char);
-			return (NULL);
-		}
-	}
     return (opt);
-}
-
-/** 
- * @brief Check if char is space
- * @param c char to check
- * @return 1 if space, 0 otherwise
-*/
-static s8 is_char_space(char c) {
-    return (c == ' ' || (c >= '\t' && c <= '\r'));
 }
 
 /** 
@@ -127,43 +126,215 @@ static s8 is_char_space(char c) {
 static char find_next_no_space(char *str) {
     int i = 0;
 
-    while (str[i] && is_char_space(str[i])) {
+    while (str[i] && is_space(str[i])) {
         ++i;
     }
     return (str[i]);
 }
 
-/**
- * @brief Parse flag value
- * @param str string to parse
- * @return value if valid, 0 otherwise
-*/
 
-static s8 parse_flag_value(OptNode *opt, char *str, u32 max_accepted, s8 value_type) {
-    u64 tmp = 0;
-	if (value_type == DECIMAL_VALUE) {
-		if (str_is_digit(str)) {
-			tmp = array_to_uint32(str);
-			if (tmp == OUT_OF_UINT32) {
-				tmp = 0;
-			}
-		}
-    	/* value * 1 if true othewise return 0 */
-	    tmp *= (tmp <= max_accepted);
-		opt->val.digit = (u32)tmp;
-		return (opt->val.digit != 0);
-	} else if (value_type == HEXA_VALUE) {
-		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
-			opt->val.str = ft_strdup(str);
-			return (TRUE);
-		}
-	} else if (value_type == CHAR_VALUE) {
-		if (ft_strlen(str) <= opt->max_val) {
-			opt->val.str = ft_strdup(str);
-			return (TRUE);
+U_OptValue *opt_val_new() {
+	U_OptValue *opt_val = ft_calloc(sizeof(U_OptValue), 1);
+	return (opt_val);
+}
+
+U_OptValue *get_first_opt_value(OptNode *opt) {
+	if (!opt->val_lst) {
+		return (NULL);
+	}
+	return (opt->val_lst->content);
+}
+
+static s8 can_append_value(OptNode *opt) {
+	if (opt->multiple_val == VALUE_APPEND) {
+		return (TRUE);
+	} else if (opt->multiple_val != VALUE_APPEND && opt->nb_stored_val == 0) {
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static s8 can_override_value(OptNode *opt) {
+	if (opt->multiple_val == VALUE_OVERRID) {
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static void override_value(OptNode *opt, U_OptValue *opt_value) {
+	U_OptValue *stored_val = get_first_opt_value(opt);
+	if (!stored_val) {
+		ft_printf_fd(2, "Error in override value, can't find first value\n");
+		return ;
+	}
+	if (opt->value_type == DECIMAL_VALUE) {
+		stored_val->digit = opt_value->digit;
+	} else if (opt->value_type > DECIMAL_VALUE) {
+		free(stored_val->str);
+		stored_val->str = ft_strdup(opt_value->str);
+	}
+
+
+	if (opt->value_type > DECIMAL_VALUE) {
+		if (opt_value->str) {
+			free(opt_value->str);
 		}
 	}
-    return (FALSE);
+	free(opt_value);
+} 
+
+static s8 handle_value_add(OptNode *opt, U_OptValue *opt_val) {
+	if (can_append_value(opt)) {
+		ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+		opt->nb_stored_val += 1;
+	} else if (can_override_value(opt)) {
+		override_value(opt, opt_val);
+	} else {
+		ft_printf_fd(2, "Can't override value return ERROR\n");
+		// If we are here we can't append val (not the first or not append value is set, and we can't override it)
+		return (CANT_BE_OVERRID);
+	}
+	return (SUCCESS_SET_VALUE);
+}
+
+s8 insert_digit_val(OptNode* opt, U_OptValue *opt_val, char *str) {
+    u64 value = 0;
+
+	value = array_to_uint32(str);
+	
+	if (value == OUT_OF_UINT32) {
+		ft_printf_fd(2, "Overflow uint32 in set_flag_value\n");
+		goto error_case;
+	} else if (value < opt->min_val) {
+		ft_printf_fd(2, "Value %u is lower than min value %u\n", value, opt->min_val);
+		goto error_case;
+	} else if (value > opt->max_val) {
+		ft_printf_fd(2, "Value %u is higher than max value %u\n", value, opt->max_val);
+		goto error_case;
+	}
+	opt_val->digit = (u32)value;
+	return (handle_value_add(opt, opt_val));
+
+	error_case:
+		free(opt_val);
+		return (ERROR_SET_VALUE);
+
+}
+
+s8 insert_string_val(OptNode *opt, U_OptValue *opt_val, char *str) {
+	s8 ret = 0;
+	
+	opt_val->str = ft_strdup(str);
+	ret = handle_value_add(opt, opt_val);
+	if (ret != SUCCESS_SET_VALUE) {
+		free(opt_val->str);
+		free(opt_val);
+	}
+	return (ret);
+	// ft_lstadd_back(&opt->val_lst, ft_lstnew(opt_val));
+	// opt->nb_stored_val += 1;
+	// return (TRUE);
+}
+
+static s8 check_string_len(char *str, u32 max_len, u32 min_len) {
+	if (ft_strlen(str) > max_len) {
+		ft_printf_fd(2, "String %s is longer than max len %u\n", str, max_len);
+		return (FALSE);
+	} else if (ft_strlen(str) < min_len) {
+		ft_printf_fd(2, "String %s is shorter than min len %u\n", str, min_len);
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
+static s8 string_value_check(OptNode *opt, char *str, s8 (*str_is_func)(char *)) {
+	if (str_is_func && str_is_func(str) == FALSE) {
+		return (FALSE);
+	}
+	if (check_string_len(str, opt->max_val, opt->min_val) == FALSE) {
+		return (FALSE);
+	}
+	return (TRUE);
+}
+
+static s8 set_flag_value(OptNode *opt, char *str, s8 value_type) {
+	U_OptValue *opt_val = NULL;;
+	opt_val = opt_val_new();
+
+	if (value_type == DECIMAL_VALUE && str_is_digit(str)) {
+		return (insert_digit_val(opt, opt_val, str));
+	} else if (value_type == HEXA_VALUE && string_value_check(opt, str, str_is_hexa)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == CHAR_VALUE && string_value_check(opt, str, NULL)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == OCTAL_VALUE && string_value_check(opt, str, str_is_octal)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == BINARY_VALUE && string_value_check(opt, str, str_is_binary)) {
+		return (insert_string_val(opt, opt_val, str));
+	} else if (value_type == CUSTOM_VALUE) {
+		if (!opt->parse) {
+			ft_printf_fd(2, "No parse function set for custom value\n");
+			free(opt_val);
+			return (ERROR_SET_VALUE);
+		}
+		if (string_value_check(opt, str, NULL) && opt->parse(opt, str) == TRUE) {
+			if (opt->add_value_after_parse) {
+				return (insert_string_val(opt, opt_val, str));
+			}
+			return (SUCCESS_SET_VALUE);
+		}
+	} else {
+		ft_printf_fd(2, "Invalid value type %d\n", value_type);
+	}
+	free(opt_val);
+    return (ERROR_SET_VALUE);
+}
+
+s8 set_flag_option(FlagContext *c, u32 flag_val, E_FlagOptSet opt_to_set, ...) {
+    va_list args;
+    OptNode *opt_node = search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val);
+    
+	if (!c) {
+        ft_printf_fd(2, "Invalid flag context\n");
+        return (FALSE);
+    }
+    
+	if (!opt_node) {
+        ft_printf_fd(2, "Flag val |%d| not found\n", flag_val);
+        return (FALSE);
+    }
+
+    va_start(args, opt_to_set);
+
+    switch (opt_to_set) {
+        case EOPT_VALUE_TYPE:
+            opt_node->value_type = (u8)va_arg(args, int);
+            if (opt_node->value_type != OPT_NO_VALUE) {
+                opt_node->has_value = TRUE;
+            }
+            break;
+        case EOPT_MAX_VAL:
+            opt_node->max_val = va_arg(args, u32);
+            break;
+        case EOPT_MIN_VAL:
+            opt_node->min_val = va_arg(args, u32);
+            break;
+        case EOPT_MULTIPLE_VAL:
+            opt_node->multiple_val = (s8)va_arg(args, int);
+            break;
+        case EOPT_PARSE_FUNC:
+            opt_node->parse = va_arg(args, CustomValParse);
+            break;
+		case EOPT_ADD_VAL_AFTER_PARSE:
+			opt_node->add_value_after_parse = (s8)va_arg(args, int);
+			break;
+        default:
+            ft_printf_fd(2, "Invalid flag option, %d\n", opt_to_set);
+            va_end(args);
+            return (FALSE);
+    }
+    va_end(args);
+    return (TRUE);
 }
 
 /**
@@ -188,12 +359,15 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
 		in_search = 1;
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
-        if (next_char != 0) {
-            ret = parse_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
-            if (ret == 0) {
+		if (next_char != 0) {
+            ret = set_flag_value(opt, &argv[idx][char_skip], opt->value_type);
+            if (ret == FALSE) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, prg_name, opt->flag_char, &argv[idx][char_skip], prg_name);
                 return (FALSE);
-            }
+            } else if ( ret == CANT_BE_OVERRID) {
+                ft_printf_fd(2, RED"%s: invalid argument -- %c value [%s] can't overrid older value\n"RESET, prg_name, opt->flag_char, &argv[idx][char_skip]);
+				return (FALSE);
+			}
             argv[idx] = "";
             *i += j;
             in_search = 0;
@@ -208,8 +382,14 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
     return (TRUE);
 }
 
-// ft_printf_fd(2, CYAN"update opt |%c|, curr val %d -> ", opt->flag_char, opt->value);
-// ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
+
+t_list *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find) {
+	OptNode *opt = get_opt_node(opt_lst, flag, to_find);
+	if (!opt) {
+		return (NULL);
+	}
+	return (opt->val_lst);
+}
 
 /**
  * @brief Get option value from flag context
@@ -218,21 +398,14 @@ int search_opt_value(char **argv, int *i, char *prg_name, OptNode *opt, u8 long_
  * @param to_find flag to find
  * @return allocated copy option value or NULL if not found
  */
-void *get_opt_value(t_list *opt_lst, u32 flag, u32 to_find)
+OptNode *get_opt_node(t_list *opt_lst, u32 flag, u32 to_find)
 {
 	OptNode	*opt = NULL;
-	void		*ret = NULL;
 
 	if (has_flag(flag, to_find)) {
 		opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
-		if (opt && opt->value_type == DECIMAL_VALUE) {
-			ret = malloc(sizeof(u32));
-			*(u32 *)ret = opt->val.digit;
-		} else if (opt && (opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE)) {
-			ret = ft_strdup(opt->val.str);
-		}
 	}
-	return (ret);
+	return (opt);
 }
 
 /**
@@ -271,12 +444,6 @@ u32 parse_flag(int argc, char **argv, FlagContext *flag_c, s8 *error)
 		/* Reset long format bool */
 		long_format_bool = CHAR_FORMAT;
     }
-
-    // for (int i = 0; i < argc; ++i) {
-    //     ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
-    // }
-
-    // display_flags(flag_c->opt_str, flags);
 	return (flags);
 }
 

@@ -6,7 +6,7 @@
 /*   By: nfour <nfour@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:43:41 by nfour             #+#    #+#             */
-/*   Updated: 2024/12/09 19:06:09 by nfour            ###   ########.fr       */
+/*   Updated: 2025/01/31 14:51:27 by nfour            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef t_stack_string t_sstring;
 
 
 #define BUFFER_SIZE 1
-#define OUT_OF_UINT32 (u64)(UINT32_MAX + 1)
+#define OUT_OF_UINT32 (u64)(UINT32_MAX + 1ULL)
 
 /* Libft */
 char    *get_next_line(int fd); /* Get next line */
@@ -83,13 +83,18 @@ char    *ft_strjoin_free(char *s1, char *s2, char option);
 int 	ft_lower_strcmp(char *s1, char *s2);
 int 	ftlib_strcmp(char *s1, char *s2);
 void 	free_incomplete_array(void **array, int max);
-s8	str_is_digit(char *str);
-s8	str_is_hexa(char *str);
+s8	    str_is_digit(char *str);
+s8	    str_is_hexa(char *str);
+s8      str_is_octal(char *str);
+s8      str_is_binary(char *str);
 int		ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 char	*str_tolower(char *str);
+
+s32 count_char(char *str, char c);
+s8 is_space(char c);
 
 int		fast_strcmp(const char *s1, const char *s2);
 int		fast_strlen(const char *s);

@@ -22,7 +22,7 @@ SRC =	ft_lstadd_back.c\
 
 OBJ = $(SRC:.c=.o)
 
-CC = gcc
+CC = clang
 
 CFLAGS = -Wall -Wextra -Werror -g
 

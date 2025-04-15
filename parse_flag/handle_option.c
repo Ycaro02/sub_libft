@@ -6,20 +6,33 @@
 */
 void display_option_list(FlagContext flag_c)
 {
-    OptNode *node = NULL; 
-	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
+    OptNode	*node = NULL;
+	s32		i = 0; 
+	ft_printf_fd(2, CYAN"Option list: Full flag str: |%s|\n"RESET, flag_c.opt_str);
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
-        ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d "RESET, node->flag_char, node->flag_val);
+		ft_printf_fd(1, "--------------------------------------------------------------------------------------------------------------------------------");
+        ft_printf_fd(1, CYAN"\nFlag: [-%c] "PURPLE"Power [%d] "YELLOW" Name |%s|"RESET","GREEN" Min :[%d] "RED"Max [%d] "ORANGE" mult_val: [%s] "BLUE"nb: [%d] "PURPLE"Func: [%s] "YELLOW"Store: [%d]\n"RESET
+        , node->flag_char, node->flag_val, node->full_name, node->min_val, node->max_val, node->multiple_val == VALUE_APPEND ? "append" : node->multiple_val == VALUE_OVERRID ? "override" : "No override", node->nb_stored_val, node->parse ? "Yes" : "No", node->add_value_after_parse);
     
-		if (node->value_type == DECIMAL_VALUE) {
-			ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, node->val.digit);
+		for (t_list *val_lst = node->val_lst; val_lst; val_lst = val_lst->next) {
+			U_OptValue *val = val_lst->content;
+			
+			ft_printf_fd(1, CYAN"[%d]: "RESET, i);
+			if (node->value_type == DECIMAL_VALUE) {
+				ft_printf_fd(1, ORANGE"|%u|\n"RESET, val->digit);
+			}
+			else if (node->value_type != OPT_NO_VALUE) {
+				ft_printf_fd(1, ORANGE"|%s|"RESET" -> "YELLOW"len [%d]\n"RESET, val->str, ft_strlen(val->str));
+			} 
+			else {
+				ft_printf_fd(1, "No value\n");
+			}
+			i++;
 		}
-		else if (node->value_type == HEXA_VALUE || node->value_type == CHAR_VALUE) {
-			ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, node->val.str, ft_strlen(node->val.str));
-		} else {
-			ft_printf_fd(1, "No value\n");
-		}
+		ft_printf_fd(1, "--------------------------------------------------------------------------------------------------------------------------------\n");
+		i = 0;
+
 	}
 }
 
@@ -81,7 +94,7 @@ void *search_exist_opt(t_list *opt_lst, s8 (cmp(void *, void *)), void *data)
  *	@param full_name full name of the flag
  *	@return opt_node if success, NULL otherwise
 */
-static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, s8 value_type)
+static OptNode *create_opt_node(u8 c, u32 flag_val, char *full_name)
 {
     OptNode *opt = ft_calloc(sizeof(OptNode), 1);
 
@@ -91,18 +104,16 @@ static OptNode *create_opt_node(u8 c, u32 flag_val, u32 value, char *full_name, 
     }
     opt->flag_char = c;
     opt->flag_val = flag_val;
-	opt->max_val = value;
-    // opt->value = (value != OPT_NO_VALUE);
-    opt->has_value = (value != OPT_NO_VALUE);
+	opt->val_lst = NULL;
     opt->full_name = ft_strdup(full_name);
-	opt->value_type = value_type;
-	if (value_type == DECIMAL_VALUE) {
-		opt->val.digit = 0;
-	}
-	else if (value_type == HEXA_VALUE || value_type == CHAR_VALUE) {
-		opt->val.str = NULL;
-	}
-	//
+	opt->parse = NULL;
+
+    opt->has_value = FALSE;
+	opt->multiple_val = VALUE_NO_OVERRID;
+	opt->value_type = OPT_NO_VALUE;
+	opt->max_val = DEFAULT_MAX_VAL;
+	opt->min_val = OPT_NO_VALUE;
+	opt->add_value_after_parse = TRUE;
 	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
@@ -139,24 +150,30 @@ static s8 update_opt_str(FlagContext *flag_c, u8 c)
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-s8 add_flag_option(FlagContext *flag_c, u8 c, u32 flag_val, u32 value, s8 value_type, char* full_name)
-{
+s8 add_flag_option(FlagContext *c, char* full_name, u32 flag_val, char flag_char) {
     OptNode *opt = NULL;
     s8 ret = 0;
 
-    if (!flag_c) {
-        ft_printf_fd(2, "Invalid list option addr\n");
+    if (!c) {
+        ft_printf_fd(2, "Invalid flag context\n");
         return (0);
     } 
-    else if (search_exist_opt(flag_c->opt_lst, is_same_char_opt, &c)\
-        || search_exist_opt(flag_c->opt_lst, is_same_flag_val_opt, &flag_val)) {
-        ft_printf_fd(2, RED"Opt char |%c| or flag val |%d| already present\n"RESET, c, flag_val);
+    else if (search_exist_opt(c->opt_lst, is_same_char_opt, &flag_char)\
+        || search_exist_opt(c->opt_lst, is_same_flag_val_opt, &flag_val)) {
+        ft_printf_fd(2, RED"Opt char |%c| or flag val |%d| already present\n"RESET, flag_char, flag_val);
         return (0);
     }
-    opt = create_opt_node(c, flag_val, value, full_name, value_type);
-    ft_lstadd_back(&flag_c->opt_lst, ft_lstnew(opt));
-    ret = update_opt_str(flag_c, c); 
+    opt = create_opt_node(flag_char, flag_val, full_name);
+    ft_lstadd_back(&c->opt_lst, ft_lstnew(opt));
+    ret = update_opt_str(c, flag_char); 
     return (ret);
+}
+
+void free_optvalue(OptNode *opt, U_OptValue *val) {
+	
+	if ((opt->value_type > DECIMAL_VALUE)) {
+		free(val->str);
+	}
 }
 
 /**
@@ -170,9 +187,10 @@ void free_opt_node(void *content)
         if (opt->full_name) {
             free(opt->full_name);
         }
-		if ((opt->value_type == HEXA_VALUE || opt->value_type == CHAR_VALUE) && opt->val.str) {
-			free(opt->val.str);
+		for (t_list *val_lst = opt->val_lst; val_lst; val_lst = val_lst->next) {
+			free_optvalue(opt, val_lst->content);
 		}
+		ft_lstclear(&opt->val_lst, free);
         free(opt);
     }
 }
@@ -190,5 +208,6 @@ void free_flag_context(FlagContext *flag_c)
         if (flag_c->opt_lst) {
             ft_lstclear(&flag_c->opt_lst, free_opt_node);
         }
+        free(flag_c);
     }
 }

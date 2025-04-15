@@ -477,3 +477,4 @@ int tss_set(tss_t key, void *val);
 #endif
 
 #endif /* _TINYTHREAD_H_ */
+
