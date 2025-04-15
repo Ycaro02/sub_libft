@@ -1,6 +1,5 @@
-// #include "libft.h"
-// #include "parse_flag/parse_flag.h"
-#include "nmap/nmap.h"
+#include "libft.h"
+#include "parse_flag/parse_flag.h"
 
 enum flag_enum {
 	DIGIT_FLAG=1,
@@ -86,11 +85,6 @@ void init_flag_context(FlagContext *c, u8 value_handling) {
 	set_flag_option(c, OCTAL_FLAG, EOPT_MAX_VAL, 100);
 	set_flag_option(c, OCTAL_FLAG, EOPT_MULTIPLE_VAL, value_handling);
 
-	add_flag_option(c, "kustom", KUSTOM_FLAG, 'k');
-	set_flag_option(c, KUSTOM_FLAG, EOPT_VALUE_TYPE, CUSTOM_VALUE);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_MULTIPLE_VAL, value_handling);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_PARSE_FUNC, parse_nmap_port);
-	set_flag_option(c, KUSTOM_FLAG, EOPT_ADD_VAL_AFTER_PARSE, FALSE);
 }
 
 
@@ -243,24 +237,6 @@ void test1_invalid_flag() {
 	}
 }
 
-
-void test_input(int argc, char **argv) {
-	// FlagContext *c = flag_context_init(argv);
-	// init_flag_context(c, VALUE_APPEND);
-
-	FlagContext *c = init_nmap_flag(argv);
-	u32 flag = parse_flag(argc, argv, c, &c->error);
-	
-	if (c->error) {
-		ft_printf_fd(2, YELLOW"Parse flag error\n"RESET);
-		free_flag_context(c);
-		return ;
-	}
-	display_flags(c->opt_str, flag);
-	display_option_list(*c);
-	extend_port_string(c, flag);
-	free_flag_context(c);
-}
 
 int main (int argc, char **argv) {
 

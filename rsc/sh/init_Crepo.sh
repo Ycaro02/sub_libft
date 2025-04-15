@@ -19,14 +19,18 @@ if [ -z "$1" ]; then
 fi
 
 REPO_NAME="$1"
-LIBFT_MODULE="git@github.com:Ycaro02/sub_libft.git"
+# LIBFT_MODULE="git@github.com:Ycaro02/sub_libft.git"
 
 # init the git submodule for libft
-git submodule init
-git submodule add ${LIBFT_MODULE} libft
-git submodule update
+# git submodule init
+# git submodule add ${LIBFT_MODULE} libft
+# git submodule update
 
+echo "Initializing the repository with name: ${REPO_NAME}, Clone libft and remove the .git dir"
+git clone git@github.com:Ycaro02/sub_libft.git libft
+rm -rf libft/.git
 
+echo "Creating the Makefile and the source files dir"
 # Create Makefile
 cat <<EOF > Makefile
 include libft/rsc/mk/color.mk
@@ -107,6 +111,7 @@ cp -r libft/rsc/mk rsc
 cp -r libft/rsc/sh rsc
 
 
+echo "Creating the source.mk file"
 # initialize the source.mk file
 cat <<EOF > rsc/mk/source.mk
 CFLAGS			=	-Wall -Wextra -Werror -O3
@@ -155,6 +160,8 @@ EOF
 # initialize the first source file
 touch src/test.c
 
+echo "Creating the test.c file, and the main.c file"
+
 cat <<EOF > src/main.c
 #include "../libft/libft.h"
 
@@ -167,6 +174,8 @@ EOF
 
 # initialize the project CI
 mkdir -p .github/workflows
+
+echo "Creating the CI file"
 
 cat <<EOF > .github/workflows/makefile.yml
 name: Makefile CI
@@ -194,17 +203,6 @@ jobs:
       with:
         ssh-private-key: \${{ secrets.SSH_PRIVATE_KEY }}
     
-    - name: Update submodules to latest
-      run: |
-          git pull
-          git submodule update --remote --recursive
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-  
-    - name: Commit submodule changes
-      run: |
-          git diff --quiet || (git commit -am "Update submodules" && git push)
-
     - name: Run make
       run: make
 
