@@ -264,12 +264,12 @@ void test_input(int argc, char **argv) {
 
 int main (int argc, char **argv) {
 
-	// test1_append();
-	// test2_append();
-	// test1_override();
-	// test2_override();
-	// test1_no_override();
-	test_input(argc, argv);
-	// test1_invalid_flag();
+	test1_append();
+	test2_append();
+	test1_override();
+	test2_override();
+	test1_no_override();
+	// test_input(argc, argv);
+	test1_invalid_flag();
 	return 0;
 }
